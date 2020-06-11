@@ -1,0 +1,19 @@
+.cart-list-row {
+
+}
+
+.cartItem-img {
+}
+
+.trashIcon {
+}
+
+.plusMinus {
+  width: .75rem !important;
+  height: .75rem;
+  border: 2px solid black !important;
+}
+
+.plusMinus:hover{
+  background-color: cyan;
+}

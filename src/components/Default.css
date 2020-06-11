@@ -1,0 +1,8 @@
+.errorPage {
+  text-align: center;
+  font-family: var(--fontFamilyOne);
+}
+
+.danger {
+  color: rgb(255, 56, 34);
+}

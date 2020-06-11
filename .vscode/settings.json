@@ -1,0 +1,10 @@
+{
+    "editor.tabSize": 2,
+    "emmet.excludeLanguages": [
+        "markdown"
+    ],
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "editor.detectIndentation": false,
+}
