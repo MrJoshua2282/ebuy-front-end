@@ -81,7 +81,6 @@ class ProductsProvider extends Component {
     this.setState(() => {
       return { product: copyProducts };
     }, () => this.compileTotalValuesHandler())
-    console.log('this is increment method')
   }
 
   decrement = (id) => {
@@ -114,7 +113,6 @@ class ProductsProvider extends Component {
     this.setState(() => {
       return { product: copyProducts, cart: copyCart };
     }, () => this.compileTotalValuesHandler())
-    console.log('item removed')
   }
 
   clearCart = () => {
@@ -150,8 +148,6 @@ class ProductsProvider extends Component {
   }
 
   render() {
-    console.log(this.state.cart)
-    console.log(this.state.products)
     return (
       <ProductsContext.Provider value={{
         ...this.state,

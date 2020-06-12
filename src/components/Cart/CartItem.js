@@ -13,7 +13,7 @@ export default function CartItem(props) {
         return (
           <div>
             <span className='cart-list'>
-              <img style={{ width: '5rem', height: '5rem' }} class='cartItem-img' src={img} alt='product' />
+              <img style={{ width: '5rem', height: '5rem' }} className='cartItem-img' src={img} alt='product' />
               <span>{title}</span>
               <span>$ {price}</span>
               <span >

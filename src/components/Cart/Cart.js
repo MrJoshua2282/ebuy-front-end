@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import './Cart.css';
 import Title from '../Title';
 import CartList from './CartList';
+import PayPalBtn from './PayPalBtn';
 import { ProductsConsumer } from '../../context';
 
 export default class Cart extends Component {
@@ -34,7 +35,7 @@ export default class Cart extends Component {
                     <span className='finalValues' >SUBTOTAL: $ {value.cartSubTotal.toFixed(2)}</span>
                     <span className='finalValues'>TAX: $ {value.cartTax.toFixed(2)}</span>
                     <span className='finalValues'>TOTAL: $ {value.cartTotal.toFixed(2)}</span>
-                    <span>PAYPAL</span>
+                    <PayPalBtn total={value.cartTotal} clearCart={value.clearCart} history={this.props.history} />
                   </div>
                 </React.Fragment>
               )
