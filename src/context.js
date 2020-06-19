@@ -5,11 +5,15 @@ const ProductsContext = React.createContext();
 
 class ProductsProvider extends Component {
   state = {
+    signedIn: true,
     products: [...storeProducts],
     detailProduct: detailProduct,
     cart: [],
     showModal: false,
+    modalType: '',
     modalProduct: detailProduct,
+    error: '',
+    showErrorModal: false,
     cartSubTotal: 0,
     cartTax: 0,
     cartTotal: 0
@@ -58,15 +62,40 @@ class ProductsProvider extends Component {
     );
   }
 
-  openModalHandler = (id) => {
-    const product = this.state.products.find(el => el.id === id);
-    this.setState(() => {
-      return { modalProduct: product, showModal: true }
-    })
+  openModalHandler = (type, id) => {
+    // productCard updateAccount updateProduct createProduct
+    if (id) {
+      const product = this.state.products.find(el => el.id === id);
+      this.setState(() => {
+        return { modalProduct: product, showModal: true, modalType: type }
+      })
+    } else {
+      this.setState(() => {
+        return { showModal: true, modalType: type }
+      })
+    }
   }
 
   closeModalHandler = () => {
     this.setState({ showModal: false });
+  }
+
+  setErrorHandler = (message) => {
+    this.setState(() => {
+      return { error: message }
+    })
+  }
+
+  toggleErrorModalHandler = () => {
+    this.setState((prevState) => {
+      return { showErrorModal: !prevState.showErrorModal }
+    });
+
+    setTimeout(() => {
+      this.setState((prevState) => {
+        return { showErrorModal: !prevState.showErrorModal }
+      });
+    }, 3000);
   }
 
   increment = (id) => {
@@ -147,6 +176,13 @@ class ProductsProvider extends Component {
     })
   }
 
+  logoutHandler = () => {
+    this.setState(() => {
+      return { signedIn: false }
+    });
+
+  }
+
   render() {
     return (
       <ProductsContext.Provider value={{
@@ -155,10 +191,13 @@ class ProductsProvider extends Component {
         addToCart: this.addToCart,
         openModalHandler: this.openModalHandler,
         closeModalHandler: this.closeModalHandler,
+        setErrorHandler: this.setErrorHandler,
+        toggleErrorModalHandler: this.toggleErrorModalHandler,
         increment: this.increment,
         decrement: this.decrement,
         removeItem: this.removeItem,
-        clearCart: this.clearCart
+        clearCart: this.clearCart,
+        logoutHandler: this.logoutHandler
       }}>
         {this.props.children}
       </ProductsContext.Provider>
@@ -168,4 +207,4 @@ class ProductsProvider extends Component {
 
 const ProductsConsumer = ProductsContext.Consumer;
 
-export { ProductsProvider, ProductsConsumer };
+export { ProductsProvider, ProductsConsumer, ProductsContext };

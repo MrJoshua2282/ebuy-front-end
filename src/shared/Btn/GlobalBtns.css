@@ -1,0 +1,92 @@
+
+.backBtn,
+.addBtn {
+  padding: .75rem;
+  outline: none;
+  font-family: inherit;
+  font-weight: bold;
+  border-radius: .75rem;
+  transition: all .3s;
+}
+
+.backBtn {
+  border: 2px solid var(--LightBlue);
+  color: var(--LightBlue);
+}
+
+.backBtn:hover {
+  background-color: var(--LightBlue);
+  color: var(--mainBlue);
+}
+
+.addBtn {
+  border: 2px solid var(--mainYellow);
+  color: var(--mainYellow);
+  margin-left: .25rem;
+}
+
+.addBtn:hover {
+  border: 2px solid var(--mainYellow);
+  color: white;
+  background-color: var(--mainYellow);
+}
+
+.clearBtn {
+  outline: none;
+  border: 2px solid salmon;
+  color: salmon;
+  width: max-content;
+  padding: .5rem;
+
+  transition: all .3s;
+}
+
+.clearBtn:hover {
+  color: white;
+  background-color: salmon;
+}
+
+.btn_info {
+  background-color: rgb(252, 123, 36);
+}
+
+.btn_product {
+  background-color: rgb(124, 50, 241);
+}
+
+.btn-tab {
+  outline: none;
+  font-family: var(--fontFamilyOne);
+  color: white;
+  font-size: 1rem;
+  padding: 1rem 3rem 1rem .25rem;
+  margin: .5rem 0;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  transition: all .3s;
+  transform: translateX(-6rem);
+}
+
+.btn_info:hover,
+.btn_product:hover {
+  transform: translateX(0);
+}
+
+.validation-btn {
+  margin: .5rem 0;
+  font-size: 1.25rem;
+  padding: 1rem;
+  border-radius: .65rem;
+  background-color: rgb(204, 247, 141);
+  border: 1px solid rgb(86, 143, 0);
+}
+
+.validation-btn:disabled {
+  cursor: not-allowed;
+  border: 1px solid rgb(168, 168, 168);
+  background-color: transparent;
+}
+
+/* .btn-tab:hover {
+  transform: translateX(0);
+} */

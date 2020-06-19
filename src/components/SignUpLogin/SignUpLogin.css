@@ -1,0 +1,50 @@
+.section-form {
+  margin: 1rem 0;
+
+  display: grid;
+  grid-template-rows: max-content max-content;
+  grid-gap: 1rem;
+  justify-content: center;
+}
+
+.small-padding {
+  padding: .25rem;
+}
+
+.form-body {
+  border: 1px solid var(--LightBlue);
+  width: 20rem;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.form1-body-label {
+  margin: 1rem 10%;
+  padding: 1rem;
+}
+
+.form1-body-input {
+  width: 80%;
+  margin: .5rem 10%;
+  border-radius: 1rem;
+  border: 1px solid var(--LightBlue);
+  padding-left: 1rem;
+}
+
+.form1-body-div-btn {
+  display: flex;
+}
+
+.signupLogin-div-btn {
+  display: grid;
+  justify-content: center;
+}
+
+.danger {
+  border-color: rgb(255, 84, 84);
+  background-color: rgb(243, 194, 194);
+}
+
+.success {
+  border-color: rgb(159, 194, 139);
+}

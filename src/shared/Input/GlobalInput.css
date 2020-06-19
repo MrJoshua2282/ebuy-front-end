@@ -1,0 +1,40 @@
+.inputDiv {
+  width: 100%;
+  height: min-content;
+  padding: .25rem;
+  box-sizing: border-box;
+}
+
+.inputLabel {
+  font-weight: bold;
+  display: block;
+  margin-bottom: .8rem;
+  display: block;
+  width: 100%;
+}
+
+.input {
+  outline: none;
+  border: 1px solid var(--LightBlue);
+  border-radius: .5rem;
+  background-color: white;
+  font: inherit;
+  padding: .6rem 1rem;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  background-color: rgb(230, 230, 230);
+}
+
+.invalid-form1 {
+  background-color: rgb(255, 176, 176);
+  border: 1px solid red;
+}
+
+.marginBttm {
+  margin-bottom: 1.5rem;
+}

@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Cart.css';
-import Title from '../Title';
+import Title from '../Title/Title';
 import CartList from './CartList';
 import PayPalBtn from './PayPalBtn';
+import { DangerClearBtn } from '../../shared/Btn/Btns';
 import { ProductsConsumer } from '../../context';
 
 export default class Cart extends Component {
@@ -30,7 +31,7 @@ export default class Cart extends Component {
                   <CartList value={value} />
                   <div className='cart-final-values-div'>
                     <Link to='/' >
-                      <button className='clearBtn' onClick={() => value.clearCart()}>CLEAR CART</button>
+                      <DangerClearBtn onClick={() => value.clearCart()}>CLEAR CART</DangerClearBtn>
                     </Link>
                     <span className='finalValues' >SUBTOTAL: $ {value.cartSubTotal.toFixed(2)}</span>
                     <span className='finalValues'>TAX: $ {value.cartTax.toFixed(2)}</span>

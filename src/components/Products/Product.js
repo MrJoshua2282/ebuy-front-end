@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './Product.css';
-import { ProductsConsumer } from '../context';
-import Cart from '../images/cart';
+import { ProductsConsumer } from '../../context';
+import Cart from '../../images/cart';
 
 export default class Products extends Component {
   render() {
@@ -19,7 +19,7 @@ export default class Products extends Component {
 
               {!inCart && <Link className='card-link-cart' to='/' onClick={() => {
                 value.addToCart(id);
-                value.openModalHandler(id);
+                value.openModalHandler('productCard', id);
               }}><Cart className='card-cart' /></Link>}
               {inCart && <div className='card-link-cart'><button className='inCart'>In Cart</button></div>}
 

@@ -6,6 +6,7 @@
 }
 
 .trashIcon {
+  cursor: pointer;
 }
 
 .plusMinus {

@@ -1,0 +1,18 @@
+.details-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .details-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+.madeBy {
+  font-family: var(--fontFamilyOne);
+  font-size: 1.25rem;
+}
