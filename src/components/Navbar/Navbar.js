@@ -8,10 +8,19 @@ import { ProductsContext } from '../../context';
 class Navbar extends Component {
   static contextType = ProductsContext;
   componentDidUpdate() {
-    // console.log(this.context)
+    // console.log(this.context.userInfo.user.id)
     // console.log(this.props, 'this is props')
+    console.log(this.context.name)
   }
+
+  charConverter = (firstName) => {
+    if (!firstName) return '';
+    let firstInitial = firstName.split('')[0];
+    return firstInitial;
+  }
+
   render() {
+    let { firstName } = this.context.userInfo;
     let login = (
       <React.Fragment>
         <span id='e'>l</span>
@@ -51,7 +60,7 @@ class Navbar extends Component {
           <Link className='navbar-img-cart-link' to='/cart'><button className='navbar-img-cart-link-btn'>
             <CartIcon className='navbar-img-cart svgCart' />
                     my cart</button></Link>
-          {this.context.signedIn && <Link to='/account' className='user-first-initial'>J</Link>}
+          {this.context.signedIn && <Link to='/account' className='user-first-initial'>{this.charConverter(this.context.name)}</Link>}
         </section>
 
         {this.context.signedIn ? <div onClick={() => {

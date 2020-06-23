@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './ProductList.css';
 import Product from './Product';
-import Title from '../Title/Title';
+import Title from '../../shared/Title/Title';
 import { ProductsConsumer } from '../../context';
 
 export default class ProductList extends Component {

@@ -46,12 +46,28 @@
   background-color: salmon;
 }
 
+#danger {
+  background-color: white;
+}
+
+#danger:hover {
+  background-color: salmon;
+}
+
 .btn_info {
-  background-color: rgb(252, 123, 36);
+  background-color: var(--blueish);
 }
 
 .btn_product {
-  background-color: rgb(124, 50, 241);
+  background-color: var(--greenish);
+}
+
+.btn_details {
+  background-color: var(--yellowish);
+}
+
+.btn_delete {
+  background-color: var(--redish);
 }
 
 .btn-tab {
@@ -67,8 +83,7 @@
   transform: translateX(-6rem);
 }
 
-.btn_info:hover,
-.btn_product:hover {
+.btn-tab:hover {
   transform: translateX(0);
 }
 
@@ -86,7 +101,3 @@
   border: 1px solid rgb(168, 168, 168);
   background-color: transparent;
 }
-
-/* .btn-tab:hover {
-  transform: translateX(0);
-} */

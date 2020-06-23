@@ -1,6 +1,18 @@
 .account-btn-div {
-  position: fixed;
+  position: absolute;
   top: 5.5rem;
   left: 0;
 }
 
+.account-header {
+  margin: 6rem 0 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  justify-items: center;
+}
+
+.account-description {
+  margin: 0 0 0 4rem;
+  width: 30%;
+  height: max-content;
+}

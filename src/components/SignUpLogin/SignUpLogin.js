@@ -2,9 +2,10 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import './SignUpLogin.css';
-import Title from '../Title/Title';
+import Title from '../../shared/Title/Title';
 import Input from '../../shared/Input/Input';
 import Spinner from '../../shared/Spinner/Spinner';
+import { useAsync } from '../../shared/hooks/async-hook';
 import { ProductsContext } from '../../context';
 import { FormBtn } from '../../shared/Btn/Btns';
 
@@ -12,6 +13,7 @@ const SignUpLogin = (props) => {
   const history = useHistory();
   const context = useContext(ProductsContext);
   const [isLoadingSignup, setIsLoadingSignup] = useState(false);
+  // const { isLoading, error, sendRequest } = useAsync();
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
   const [form1IsValid, setForm1IsValid] = useState(false);
   const [form2IsValid, setForm2IsValid] = useState(false);
@@ -95,6 +97,38 @@ const SignUpLogin = (props) => {
   const loginHandler = async (event) => {
     event.preventDefault();
     // setIsLoadingLogin(true)
+    let response;
+    try {
+      setIsLoadingSignup(true);
+      response = await fetch(`http://localhost:5000/api/users/login`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          // JSON.stringify() takes js objects/arrays and converts them to json
+          body: JSON.stringify({
+            email: form2[0].value,
+            password: form2[1].value,
+          })
+        }
+      )
+      const responseData = await response.json();
+      // if response has a 400ish/500ish response code, then handle that error
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      form2[0].value = '';
+      form2[1].value = '';
+      history.push('/');
+      context.toggleSignedInHandler(responseData);
+      // context.userId
+
+    } catch (error) {
+      context.setErrorHandler(error || 'Something went wrong, please try again');
+      context.toggleErrorModalHandler();
+    }
+    setIsLoadingSignup(false);
 
   }
 
@@ -128,8 +162,10 @@ const SignUpLogin = (props) => {
       form1[2].value = '';
       form1[3].value = '';
       history.push('/');
+      context.toggleSignedInHandler(responseData)
+      // context.userId
 
-      console.log(responseData);
+      // console.log(responseData.user.id);
     } catch (error) {
       console.log(error);
       context.setErrorHandler(error || 'Something went wrong, please try again');

@@ -7,33 +7,21 @@ import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
 import { ProductsContext } from '../../context';
 
-class UpdateAccountInfo extends Component {
+class DeleteAccount extends Component {
 
   static contextType = ProductsContext;
   state = {
     isLoading: false,
     form1: [
-      // Product Name
+      // Email
       {
         id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: {
-          type: 'text', placeholder: 'product name'
+          type: 'text', placeholder: 'email'
         }, value: '', pattern: ".{1,}"
       },
 
-      // Price
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: 0 }, value: '', pattern: ".{1,}" },
-
-      // Description
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'textarea', attributes: { type: 'text', placeholder: 'description' }, value: '', pattern: ".{1,}" },
-
-      // Image
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'file', placeholder: 'image' }, value: '', pattern: "" },
-
-      // Company
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: '', pattern: ".{1,}" },
-
-      // Inventory
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory count', min: 0 }, value: '', pattern: ".{1,}" },
+      // Password
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: ".{1,}" },
     ],
     form1IsValid: false
   }
@@ -82,20 +70,14 @@ class UpdateAccountInfo extends Component {
         return { isLoading: true }
       })
       const response = await fetch(`http://localhost:5000/api/products`, {
-        method: 'POST',
+        method: 'DELET',
         headers: {
           'Content-Type': 'application/json'
         },
         // JSON.stringify() takes js objects/arrays and converts them to json
         body: JSON.stringify({
-          title: this.state.form1[0].value,
-          price: this.state.form1[1].value,
-          description: this.state.form1[2].value,
-          image: this.state.form1[3].value,
-          company: this.state.form1[4].value,
-          inventory: this.state.form1[5].value,
-          // creatorId: this.context.userInfo.user.id,
-          creatorId: "5ef0b451b1de182ef13efb78"
+          email: this.state.form1[0].value,
+          password: this.state.form1[1].value,
         })
       })
 
@@ -137,12 +119,11 @@ class UpdateAccountInfo extends Component {
         <form onSubmit={this.createProductHandler} >
           <Title title='Create Product' />
           {elForm}
-          {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Create!</FormBtn>}
-
+          {this.state.isLoading ? <Spinner /> : <FormBtn className='clearBtn' id='danger' type='submit' disabled={!this.state.form1IsValid}>Delete Account</FormBtn>}
         </form>
       </React.Fragment >
     )
   }
 }
 
-export default UpdateAccountInfo;
+export default DeleteAccount;

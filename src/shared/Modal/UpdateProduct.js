@@ -1,37 +1,48 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom'
+
+
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
 import Title from '../Title/Title';
 import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
-import { ProductsContext } from '../../context';
 
-class UpdateAccountInfo extends Component {
+import { ProductsContext } from '../../context';
+// const Component = withRouter(({ history, location }) => {
+
+// })
+
+
+class UpdateProduct extends Component {
   static contextType = ProductsContext;
   state = {
     isLoading: false,
     form1: [
-      // First Name
+      // Image
       {
         id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: {
-          type: 'text', placeholder: 'first name'
-        }, value: '', pattern: ""
+          type: 'file', placeholder: 'image'
+        }, value: ``, pattern: "", label: 'Image'
       },
 
-      // Last Name
-      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'last name' }, value: '', pattern: "" },
+      // Product Name
+      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'product name' }, value: `${this.context.productForUpdating.title}`, pattern: "", label: 'Product Name' },
 
-      // Email
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'email' }, value: '', pattern: '(?=.*@)' },
+      // Company
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: `${this.context.productForUpdating.company}`, pattern: '', label: 'Company' },
 
-      // Password
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: "" },
+      // Price
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price' }, value: `${this.context.productForUpdating.price}`, pattern: "", label: 'Price' },
 
-      // New Password
-      { id: 'a password containing at least 8 characters', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'new password' }, value: '', pattern: ".{8,}" },
+      // Inventory
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory' }, value: `${this.context.productForUpdating.inventory}`, pattern: "", label: 'Inventory' },
+
+      // Description
+      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'description' }, value: `${this.context.productForUpdating.description}`, pattern: "", label: 'Description' },
     ],
-    form1IsValid: false
+    form1IsValid: true
   }
 
   checkValidity = (value, validation, pattern) => {
@@ -76,19 +87,20 @@ class UpdateAccountInfo extends Component {
       this.setState(() => {
         return { isLoading: true }
       });
-      const response = await fetch(`http://localhost:5000/api/users/update-user`, {
+      const response = await fetch(`http://localhost:5000/api/products/${this.context.productForUpdating.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
         // JSON.stringify() takes js objects/arrays and converts them to json
         body: JSON.stringify({
-          firstName: this.state.form1[0].value,
-          lastName: this.state.form1[1].value,
-          email: this.state.form1[2].value,
-          password: this.state.form1[3].value,
-          newPassword: this.state.form1[4].value,
-          // creatorId: "5eed1e9716cc912081895e60"
+          image: this.state.form1[0].value,
+          title: this.state.form1[1].value,
+          company: this.state.form1[2].value,
+          price: this.state.form1[3].value,
+          inventory: this.state.form1[4].value,
+          description: this.state.form1[5].value,
+          userId: this.context.userInfo.user.id
         })
       })
 
@@ -98,7 +110,11 @@ class UpdateAccountInfo extends Component {
         throw new Error(responseData.message);
       }
 
-      console.log(responseData)
+      const { location, history } = this.props;
+      history.replace('/');
+      history.replace('/account');
+      this.context.closeModalHandler();
+      // console.log(responseData)
 
     } catch (error) {
       this.context.setErrorHandler(error)
@@ -122,18 +138,19 @@ class UpdateAccountInfo extends Component {
         shouldValidate={el.validation}
         touched={el.touched}
         valueType={el.id}
+        label={el.label}
       />
     });
     return (
       <React.Fragment>
         <form onSubmit={this.updateAccountHandler}>
-          <Title title='Update Personal Info' />
+          <Title title='Update Item' />
           {elForm}
-          {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Submit Changes</FormBtn>}
+          {this.state.isLoading ? <Spinner /> : <FormBtn type='submit'>Submit Update</FormBtn>}
         </form>
       </React.Fragment>
     )
   }
 }
 
-export default UpdateAccountInfo;
+export default withRouter(UpdateProduct);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Cart.css';
-import Title from '../Title/Title';
+import Title from '../../shared/Title/Title';
 import CartList from './CartList';
 import PayPalBtn from './PayPalBtn';
 import { DangerClearBtn } from '../../shared/Btn/Btns';

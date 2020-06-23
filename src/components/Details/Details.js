@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Details.css';
-import Title from '../Title/Title';
+import Title from '../../shared/Title/Title';
 import { ReturnBtn, GoToCartBtn } from '../../shared/Btn/Btns';
 import { ProductsConsumer } from '../../context';
 

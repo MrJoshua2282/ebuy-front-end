@@ -6,6 +6,9 @@ const ProductsContext = React.createContext();
 class ProductsProvider extends Component {
   state = {
     signedIn: true,
+    userInfo: {},
+    productForUpdating: {},
+    name: '',
     products: [...storeProducts],
     detailProduct: detailProduct,
     cart: [],
@@ -62,8 +65,29 @@ class ProductsProvider extends Component {
     );
   }
 
+  toggleSignedInHandler = (person) => {
+    if (person) {
+      // this.setState(() => {
+      //   return { signedIn: true, userInfo: person, name: person.user.firstName }
+      // })
+      this.setState(() => {
+        return { signedIn: true, userInfo: person, name: 'Joshua' }
+      })
+    } else {
+      this.setState(() => {
+        return { signedIn: false, userInfo: {}, name: '' }
+      })
+    }
+  }
+
+  setProductForUpdatingHandler = (obj) => {
+    this.setState(() => {
+      return { productForUpdating: obj };
+    })
+  }
+
   openModalHandler = (type, id) => {
-    // productCard updateAccount updateProduct createProduct
+    // productCard updateAccount updateProduct createProduct deleteAccount deleteProduct
     if (id) {
       const product = this.state.products.find(el => el.id === id);
       this.setState(() => {
@@ -189,6 +213,8 @@ class ProductsProvider extends Component {
         ...this.state,
         handleDetail: this.handleDetail,
         addToCart: this.addToCart,
+        toggleSignedInHandler: this.toggleSignedInHandler,
+        setProductForUpdatingHandler: this.setProductForUpdatingHandler,
         openModalHandler: this.openModalHandler,
         closeModalHandler: this.closeModalHandler,
         setErrorHandler: this.setErrorHandler,

@@ -2,25 +2,26 @@ import React from 'react';
 
 import './AccProdItem.css';
 
-export default function AccProdItem() {
+export default function AccProdItem(props) {
   return (
     <form>
-      <img src="" alt="product" className="account-product-img" />
-      <span className="account-title">Title</span>
+      <img src={props.image} alt="product" className="account-product-img" />
+      <span className="account-title">{props.title}</span>
       {/* <input onChange={} value={} placeholder='company name' /> */}
       <span className="account-price">
         <button>-</button>
-        <button>$ price</button>
+        <button>$ {props.price}</button>
         <button>+</button>
       </span>
-      <span className="account-company">Company</span>
+      <span className="account-company">{props.company}</span>
       {/* <input onChange={} value={} placeholder='company name' /> */}
       <span className="account-inventory">
         <button>-</button>
-        <button>inventory number</button>
+        <button>{props.inventory}</button>
         <button>+</button>
       </span>
-      <button>Submit Changes</button>
+      <div>{props.description}</div>
+      <button type='submit'>Submit Changes</button>
     </form>
   )
 }

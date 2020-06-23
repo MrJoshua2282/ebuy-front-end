@@ -1,34 +1,39 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import './Account.css';
-import Title from '../Title/Title';
+import Title from '../../shared/Title/Title';
+import Spinner from '../../shared/Spinner/Spinner';
+import AccProdList from './AccProdList';
 import { ProductsContext } from '../../context';
 import { TabBtn } from '../../shared/Btn/Btns';
 
 const Account = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadedProducts, setLoadedProducts] = useState(false);
   const context = useContext(ProductsContext);
-  const { modalType, openModalHandler } = context;
-  useEffect(() => {
-    console.log(context)
-    console.log(modalType)
-  })
+  const { modalType, openModalHandler, userInfo, setErrorHandler, toggleErrorModalHandler } = context;
+
   return (
     <React.Fragment>
       <Title title='Account' />
-      <Title title='users name' />
+      {/* <Title title={`${userInfo.user.firstName}`} /> */}
+      <Title title={`Update me later in account`} />
       <div className='account-btn-div'>
+        <TabBtn className='btn_product' onClick={() => openModalHandler('createProduct')}>create item</TabBtn>
+        <br />
         <TabBtn className='btn_info' onClick={() => openModalHandler('updateAccount')}>update info</TabBtn>
         <br />
-        <TabBtn className='btn_product' onClick={() => openModalHandler('createProduct')}>create item</TabBtn>
+        <TabBtn className='btn_delete' onClick={() => openModalHandler('deleteAccount')}>delete account</TabBtn>
       </div>
-      <div>
-        <img src="" alt="product" className="account-product-img" />
-        <span className="account-title">Title</span>
-        <span className="account-price">$Price</span>
-        <span className="account-company">Company</span>
-        <span className="account-inventory">inventory</span>
+      <div className='account-header'>
+        <div>YOUR PRODUCTS</div>
+        <div>NAME OF PRODUCT</div>
+        <div>PRICE</div>
+        <div>COMPANY</div>
+        <div>INVENTORY</div>
       </div>
-      <span>list</span>
+      <AccProdList />
     </React.Fragment>
   )
 }

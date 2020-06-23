@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 
 import './GlobalModal.css';
 import UpdatedAccountInfo from './UpdateAccountInfo';
-import UpdateProductInfo from './UpdateProductInfo';
+import UpdateProduct from './UpdateProduct';
 import CreateProduct from './CreateProduct';
 import ProductCard from './ProductCard';
+import DeleteAccount from './DeleteAccount';
+import DeleteProduct from './DeleteProduct';
 import { ProductsContext } from '../../context';
 
 class Modal extends Component {
@@ -20,8 +22,10 @@ class Modal extends Component {
           < div className='modal-card' >
             {modalType === 'productCard' && <ProductCard />}
             {modalType === 'updateAccount' && <UpdatedAccountInfo />}
-            {modalType === 'updateProduct' && <UpdateProductInfo />}
+            {modalType === 'updateProduct' && <UpdateProduct />}
             {modalType === 'createProduct' && <CreateProduct />}
+            {modalType === 'deleteAccount' && <DeleteAccount />}
+            {modalType === 'deleteProduct' && <DeleteProduct />}
           </div >}
       </React.Fragment>
     )
