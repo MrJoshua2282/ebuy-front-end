@@ -79,7 +79,8 @@ class UpdateAccountInfo extends Component {
       const response = await fetch(`http://localhost:5000/api/users/update-user`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token,
         },
         // JSON.stringify() takes js objects/arrays and converts them to json
         body: JSON.stringify({
@@ -88,7 +89,6 @@ class UpdateAccountInfo extends Component {
           email: this.state.form1[2].value,
           password: this.state.form1[3].value,
           newPassword: this.state.form1[4].value,
-          // creatorId: "5eed1e9716cc912081895e60"
         })
       })
 

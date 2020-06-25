@@ -1,18 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext } from 'react';
 
 import './Account.css';
 import Title from '../../shared/Title/Title';
-import Spinner from '../../shared/Spinner/Spinner';
 import AccProdList from './AccProdList';
 import { ProductsContext } from '../../context';
 import { TabBtn } from '../../shared/Btn/Btns';
 
 const Account = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadedProducts, setLoadedProducts] = useState(false);
+
   const context = useContext(ProductsContext);
-  const { modalType, openModalHandler, userInfo, setErrorHandler, toggleErrorModalHandler } = context;
+  const { openModalHandler, userInfo } = context;
 
   return (
     <React.Fragment>

@@ -5,14 +5,17 @@
 }
 
 .account-header {
-  margin: 6rem 0 0 2rem;
+  margin: 5rem 0 0 2rem;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   justify-items: center;
+  align-items: center;
 }
 
 .account-description {
-  margin: 0 0 0 4rem;
+  margin: 0 0 0 6rem;
   width: 30%;
   height: max-content;
+  font-family: inherit;
+  margin-top: 1rem;
 }

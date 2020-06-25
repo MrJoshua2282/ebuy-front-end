@@ -1,6 +1,7 @@
 import React from 'react';
 
 import './GlobalInput.css';
+import { ReturnBtn } from '../Btn/Btns'
 
 const Input = (props) => {
   let element = null;
@@ -17,6 +18,17 @@ const Input = (props) => {
   switch (props.elType) {
     case 'input':
       element = <input className={`input ${validationClass} ${props.className}`} {...props.attributes} value={props.value} onChange={props.onChange} />;
+      break;
+    case 'inputFile':
+      element = (
+        <React.Fragment>
+          <input className={`input ${validationClass} ${props.className}`} {...props.attributes} style={{ display: 'none' }} value={props.value} onChange={props.onChange} />
+          <div className='image-preview'>
+            <img src="" alt="Preview" />
+          </div>
+          <ReturnBtn type='button'>Select Image</ReturnBtn>
+        </React.Fragment>
+      );
       break;
     case 'textarea':
       element = <textarea className={`input ${validationClass} ${props.className}`} {...props.attributes} value={props.value} onChange={props.onChange} />;

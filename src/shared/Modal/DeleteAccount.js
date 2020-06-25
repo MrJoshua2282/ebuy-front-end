@@ -51,7 +51,7 @@ class DeleteAccount extends Component {
       if (i === itemId) {
         el.value = value;
         el.valid = this.checkValidity(el.value, el.validation, el.pattern);
-        el.touched = true;
+        el.validation.touched = true;
       }
       return el;
     });
@@ -70,9 +70,10 @@ class DeleteAccount extends Component {
         return { isLoading: true }
       })
       const response = await fetch(`http://localhost:5000/api/products`, {
-        method: 'DELET',
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token,
         },
         // JSON.stringify() takes js objects/arrays and converts them to json
         body: JSON.stringify({
@@ -87,7 +88,12 @@ class DeleteAccount extends Component {
         throw new Error(responseData.message);
       }
       let copyForm = [...this.state.form1];
-      copyForm.map(el => el.value = '');
+      copyForm.map(el => {
+        el.value = '';
+        el.valid = false;
+        el.validation.touched = false;
+        return el;
+      });
       this.setState({ form1: copyForm, form1IsValid: false });
       console.log(responseData)
 

@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import './SignUpLogin.css';
 import Title from '../../shared/Title/Title';
 import Input from '../../shared/Input/Input';
 import Spinner from '../../shared/Spinner/Spinner';
-import { useAsync } from '../../shared/hooks/async-hook';
 import { ProductsContext } from '../../context';
 import { FormBtn } from '../../shared/Btn/Btns';
 
@@ -73,7 +72,7 @@ const SignUpLogin = (props) => {
       if (i === itemId) {
         el.value = value;
         el.valid = checkValidity(el.value, el.validation, el.pattern);
-        el.touched = true;
+        el.validation.touched = true;
       }
       return el;
     });
@@ -96,10 +95,9 @@ const SignUpLogin = (props) => {
 
   const loginHandler = async (event) => {
     event.preventDefault();
-    // setIsLoadingLogin(true)
     let response;
     try {
-      setIsLoadingSignup(true);
+      setIsLoadingLogin(true)
       response = await fetch(`http://localhost:5000/api/users/login`,
         {
           method: 'POST',
@@ -118,8 +116,15 @@ const SignUpLogin = (props) => {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      form2[0].value = '';
-      form2[1].value = '';
+
+      let copyForm = [...form2];
+      copyForm.map(el => {
+        el.value = '';
+        el.valid = false;
+        el.validation.touched = false;
+        return el;
+      });
+      setForm2(copyForm);
       history.push('/');
       context.toggleSignedInHandler(responseData);
       // context.userId
@@ -128,7 +133,7 @@ const SignUpLogin = (props) => {
       context.setErrorHandler(error || 'Something went wrong, please try again');
       context.toggleErrorModalHandler();
     }
-    setIsLoadingSignup(false);
+    setIsLoadingLogin(false)
 
   }
 
@@ -157,15 +162,20 @@ const SignUpLogin = (props) => {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      form1[0].value = '';
-      form1[1].value = '';
-      form1[2].value = '';
-      form1[3].value = '';
+      let copyForm = [...form1];
+      copyForm.map(el => {
+        el.value = '';
+        el.valid = false;
+        el.validation.touched = false;
+        return el;
+      });
+      setForm1(copyForm);
       history.push('/');
+
       context.toggleSignedInHandler(responseData)
       // context.userId
 
-      // console.log(responseData.user.id);
+      console.log(responseData);
     } catch (error) {
       console.log(error);
       context.setErrorHandler(error || 'Something went wrong, please try again');

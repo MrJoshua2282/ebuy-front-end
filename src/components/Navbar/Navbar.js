@@ -20,7 +20,7 @@ class Navbar extends Component {
   }
 
   render() {
-    let { firstName } = this.context.userInfo;
+    // let { firstName } = this.context.userInfo;
     let login = (
       <React.Fragment>
         <span id='e'>l</span>
@@ -64,7 +64,7 @@ class Navbar extends Component {
         </section>
 
         {this.context.signedIn ? <div onClick={() => {
-          this.context.logoutHandler();
+          this.context.toggleSignedInHandler();
           this.props.history.push('/');
         }} className='link-ebuy'>
           {login}

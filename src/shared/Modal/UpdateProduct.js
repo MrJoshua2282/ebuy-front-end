@@ -18,12 +18,14 @@ import { ProductsContext } from '../../context';
 class UpdateProduct extends Component {
   static contextType = ProductsContext;
   state = {
+    file: '',
+    previewUrl: '',
     isLoading: false,
     form1: [
       // Image
       {
         id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: {
-          type: 'file', placeholder: 'image'
+          type: 'file', placeholder: 'image', accept: '.jpg, .png,.jpeg'
         }, value: ``, pattern: "", label: 'Image'
       },
 
@@ -60,6 +62,17 @@ class UpdateProduct extends Component {
     return isValid;
   }
 
+  fileReaderHandler = (file) => {
+
+    this.setState({ file: file });
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      this.setState({ previewUrl: fileReader.result });
+    };
+    fileReader.readAsDataURL(file);
+  }
+
   inputChangeHandler = (event, itemId, form) => {
     const { value } = event.target;
 
@@ -67,12 +80,17 @@ class UpdateProduct extends Component {
 
     copyForm = copyForm.map((el, i) => {
       if (i === itemId) {
+        if (el.attributes.type === 'file') {
+          this.fileReaderHandler(event.target.files[0]);
+        }
+
         el.value = value;
         el.valid = this.checkValidity(el.value, el.validation, el.pattern);
         el.touched = true;
       }
       return el;
     });
+
 
     let formIsValid = true;
     formIsValid = form.every(el => el.valid && formIsValid);
@@ -87,30 +105,29 @@ class UpdateProduct extends Component {
       this.setState(() => {
         return { isLoading: true }
       });
+      const formData = new FormData();
+      formData.append('image', this.state.file);
+      formData.append('title', this.state.form1[1].value);
+      formData.append('company', this.state.form1[2].value);
+      formData.append('price', this.state.form1[3].value);
+      formData.append('inventory', this.state.form1[4].value);
+      formData.append('description', this.state.form1[5].value);
+
       const response = await fetch(`http://localhost:5000/api/products/${this.context.productForUpdating.id}`, {
         method: 'PATCH',
+        body: formData,
         headers: {
-          'Content-Type': 'application/json'
-        },
-        // JSON.stringify() takes js objects/arrays and converts them to json
-        body: JSON.stringify({
-          image: this.state.form1[0].value,
-          title: this.state.form1[1].value,
-          company: this.state.form1[2].value,
-          price: this.state.form1[3].value,
-          inventory: this.state.form1[4].value,
-          description: this.state.form1[5].value,
-          userId: this.context.userInfo.user.id
-        })
+          Authorization: 'Bearer ' + this.context.token,
+        }
       })
-
       const responseData = await response.json();
 
       if (!response.ok) {
         throw new Error(responseData.message);
       }
+      this.setState({ file: '' });
 
-      const { location, history } = this.props;
+      const { history } = this.props;
       history.replace('/');
       history.replace('/account');
       this.context.closeModalHandler();
@@ -126,7 +143,9 @@ class UpdateProduct extends Component {
     })
   }
 
+
   render() {
+    console.log(this.state.file)
     const elForm = this.state.form1.map((el, i) => {
       return <Input
         key={i}
@@ -145,6 +164,7 @@ class UpdateProduct extends Component {
       <React.Fragment>
         <form onSubmit={this.updateAccountHandler}>
           <Title title='Update Item' />
+          {this.state.file && <div><img style={{ width: '5rem', height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit'>Submit Update</FormBtn>}
         </form>

@@ -8,9 +8,10 @@ import { FormBtn } from '../Btn/Btns';
 import { ProductsContext } from '../../context';
 
 class UpdateAccountInfo extends Component {
-
   static contextType = ProductsContext;
   state = {
+    file: '',
+    previewUrl: '',
     isLoading: false,
     form1: [
       // Product Name
@@ -24,10 +25,10 @@ class UpdateAccountInfo extends Component {
       { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: 0 }, value: '', pattern: ".{1,}" },
 
       // Description
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'textarea', attributes: { type: 'text', placeholder: 'description' }, value: '', pattern: ".{1,}" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'textarea', attributes: { type: 'text', placeholder: 'description' }, value: '', files: '', pattern: ".{1,}" },
 
       // Image
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'file', placeholder: 'image' }, value: '', pattern: "" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'file', placeholder: 'image', accept: '.jpg, .png,.jpeg' }, value: '', pattern: ".{1,}" },
 
       // Company
       { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: '', pattern: ".{1,}" },
@@ -37,7 +38,6 @@ class UpdateAccountInfo extends Component {
     ],
     form1IsValid: false
   }
-
 
   checkValidity = (value, validation, pattern) => {
     let isValid = true;
@@ -54,6 +54,17 @@ class UpdateAccountInfo extends Component {
     return isValid;
   }
 
+  fileReaderHandler = (file) => {
+
+    this.setState({ file: file });
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      this.setState({ previewUrl: fileReader.result });
+    };
+    fileReader.readAsDataURL(file);
+  }
+
   inputChangeHandler = (event, itemId, form) => {
     const { value } = event.target;
 
@@ -61,9 +72,13 @@ class UpdateAccountInfo extends Component {
 
     copyForm = copyForm.map((el, i) => {
       if (i === itemId) {
+        if (el.attributes.type === 'file') {
+          this.fileReaderHandler(event.target.files[0]);
+        }
+
         el.value = value;
         el.valid = this.checkValidity(el.value, el.validation, el.pattern);
-        el.touched = true;
+        el.validation.touched = true;
       }
       return el;
     });
@@ -76,38 +91,44 @@ class UpdateAccountInfo extends Component {
 
   createProductHandler = async (event) => {
     event.preventDefault();
-
+    // new FormData() is already available on browsers
+    // can add binary data/files/images as well as text data
     try {
-      this.setState(() => {
-        return { isLoading: true }
-      })
+      const formData = new FormData();
+      formData.append('title', this.state.form1[0].value);
+      formData.append('price', this.state.form1[1].value);
+      formData.append('description', this.state.form1[2].value);
+      formData.append('image', this.state.file);
+      formData.append('company', this.state.form1[4].value);
+      formData.append('inventory', this.state.form1[5].value);
+
+      this.setState({ isLoading: true })
+
       const response = await fetch(`http://localhost:5000/api/products`, {
         method: 'POST',
+        body: formData,
         headers: {
-          'Content-Type': 'application/json'
-        },
-        // JSON.stringify() takes js objects/arrays and converts them to json
-        body: JSON.stringify({
-          title: this.state.form1[0].value,
-          price: this.state.form1[1].value,
-          description: this.state.form1[2].value,
-          image: this.state.form1[3].value,
-          company: this.state.form1[4].value,
-          inventory: this.state.form1[5].value,
-          // creatorId: this.context.userInfo.user.id,
-          creatorId: "5ef0b451b1de182ef13efb78"
-        })
+          Authorization: 'Bearer ' + this.context.token,
+        }
       })
 
+      console.log(response)
+
       const responseData = await response.json();
+      console.log(responseData)
 
       if (!response.ok) {
         throw new Error(responseData.message);
       }
       let copyForm = [...this.state.form1];
-      copyForm.map(el => el.value = '');
-      this.setState({ form1: copyForm, form1IsValid: false });
-      console.log(responseData)
+      copyForm.map(el => {
+        el.value = '';
+        el.valid = false;
+        el.validation.touched = false;
+        return el;
+      });
+      this.setState({ form1: copyForm, form1IsValid: false, file: '' });
+      // console.log(responseData)
 
     } catch (error) {
       this.context.setErrorHandler(error)
@@ -136,9 +157,9 @@ class UpdateAccountInfo extends Component {
       <React.Fragment>
         <form onSubmit={this.createProductHandler} >
           <Title title='Create Product' />
+          {this.state.file && <div><img style={{ width: '5rem', height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Create!</FormBtn>}
-
         </form>
       </React.Fragment >
     )

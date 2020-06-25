@@ -5,10 +5,12 @@ const ProductsContext = React.createContext();
 
 class ProductsProvider extends Component {
   state = {
-    signedIn: true,
+    signedIn: false,
     userInfo: {},
     productForUpdating: {},
+    tokenExpirationDate: '',
     name: '',
+    token: '',
     products: [...storeProducts],
     detailProduct: detailProduct,
     cart: [],
@@ -65,17 +67,24 @@ class ProductsProvider extends Component {
     );
   }
 
-  toggleSignedInHandler = (person) => {
+  toggleSignedInHandler = (person, expirationDate) => {
+    // person.userId   person.token
     if (person) {
-      // this.setState(() => {
-      //   return { signedIn: true, userInfo: person, name: person.user.firstName }
-      // })
+      //1hr
+      const tokenExpirationDate = expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60)
+
+      localStorage.setItem('userData', JSON.stringify({ userId: person.userId, token: person.token, expiration: tokenExpirationDate.toISOString() }))
+
       this.setState(() => {
-        return { signedIn: true, userInfo: person, name: 'Joshua' }
+        return { signedIn: true, userInfo: person, name: person.firstName, token: person.token, tokenExpirationDate: tokenExpirationDate }
       })
+
     } else {
+
       this.setState(() => {
-        return { signedIn: false, userInfo: {}, name: '' }
+        return { signedIn: false, userInfo: {}, name: '', token: '', tokenExpirationDate: '' }
+      }, () => {
+        localStorage.removeItem('userData');
       })
     }
   }
@@ -200,13 +209,6 @@ class ProductsProvider extends Component {
     })
   }
 
-  logoutHandler = () => {
-    this.setState(() => {
-      return { signedIn: false }
-    });
-
-  }
-
   render() {
     return (
       <ProductsContext.Provider value={{
@@ -222,8 +224,7 @@ class ProductsProvider extends Component {
         increment: this.increment,
         decrement: this.decrement,
         removeItem: this.removeItem,
-        clearCart: this.clearCart,
-        logoutHandler: this.logoutHandler
+        clearCart: this.clearCart
       }}>
         {this.props.children}
       </ProductsContext.Provider>
