@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
 
-import { storeProducts, detailProduct } from './data';
+// import { storeProducts, detailProduct } from './data';
 const ProductsContext = React.createContext();
 
 class ProductsProvider extends Component {
   state = {
+    isLoading: false,
+    file: '',
+    previewUrl: '',
     signedIn: false,
-    userInfo: {},
+    userId: '',
     productForUpdating: {},
     tokenExpirationDate: '',
     name: '',
     token: '',
-    products: [...storeProducts],
-    detailProduct: detailProduct,
+    products: '',
+    detailProduct: '',
     cart: [],
     showModal: false,
     modalType: '',
-    modalProduct: detailProduct,
+    modalProduct: '',
     error: '',
     showErrorModal: false,
     cartSubTotal: 0,
@@ -28,14 +31,33 @@ class ProductsProvider extends Component {
   }
 
   setProducts = () => {
-    let prod = [];
-    storeProducts.forEach(item => {
-      const singItem = { ...item };
-      prod = [...prod, singItem];
-    });
-    this.setState(() => {
-      return { products: prod }
-    });
+    const getData = async () => {
+      try {
+        this.setState({ isLoading: true });
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const responseData = await response.json();
+        console.log(responseData.products);
+
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+        this.setState(() => {
+          return { products: responseData.products }
+        });
+
+      } catch (error) {
+        this.setErrorHandler(error);
+        this.toggleErrorModalHandler();
+      }
+
+      this.setState({ isLoading: false });
+    }
+    getData();
   }
 
   // details page
@@ -62,7 +84,6 @@ class ProductsProvider extends Component {
     this.setState(() => {
       return { products: copyProducts, cart: [...this.state.cart, ...cartArr] };
     },
-      // () => console.log(this.state.cart)
       () => this.compileTotalValuesHandler()
     );
   }
@@ -71,18 +92,20 @@ class ProductsProvider extends Component {
     // person.userId   person.token
     if (person) {
       //1hr
-      const tokenExpirationDate = expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60)
+      const tokenExpirationDate = expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
+      // const firstName = person.firstName ||
 
-      localStorage.setItem('userData', JSON.stringify({ userId: person.userId, token: person.token, expiration: tokenExpirationDate.toISOString() }))
+      localStorage.setItem('userData', JSON.stringify({ userId: person.userId, token: person.token, expiration: tokenExpirationDate.toISOString(), firstName: person.firstName }))
 
       this.setState(() => {
-        return { signedIn: true, userInfo: person, name: person.firstName, token: person.token, tokenExpirationDate: tokenExpirationDate }
+        return { userId: person.userId, signedIn: true, name: person.firstName, token: person.token, tokenExpirationDate: tokenExpirationDate }
       })
-
+      // userInfo: person,
+      //userInfo: {},
     } else {
 
       this.setState(() => {
-        return { signedIn: false, userInfo: {}, name: '', token: '', tokenExpirationDate: '' }
+        return { userId: '', firstName: '', signedIn: false, name: '', token: '', tokenExpirationDate: '' }
       }, () => {
         localStorage.removeItem('userData');
       })
@@ -209,6 +232,63 @@ class ProductsProvider extends Component {
     })
   }
 
+
+  checkValidity = (value, validation, pattern) => {
+    let isValid = true;
+    if (validation.required) {
+      isValid = value.trim() !== '' && isValid;
+    }
+
+    if (validation.minLength) {
+      isValid = value.length >= validation.minLength && isValid;
+    }
+    if (pattern) {
+      isValid = value.search(pattern) > -1;
+    }
+    return isValid;
+  }
+
+  validationHandler = (event, itemId, form) => {
+
+    const fileReaderHandler = (file) => {
+      console.log(file)
+      this.setState({ file: file });
+
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        this.setState({ previewUrl: fileReader.result })
+      };
+      fileReader.readAsDataURL(file);
+    }
+    const { value } = event.target;
+
+    let copyForm = [...form];
+
+    copyForm = copyForm.map((el, i) => {
+      if (i === itemId) {
+        if (el.attributes.type === 'file') {
+          fileReaderHandler(event.target.files[0]);
+        }
+
+        el.value = value;
+        el.valid = this.checkValidity(el.value, el.validation, el.pattern);
+        el.validation.touched = true;
+      }
+      return el;
+    });
+
+    let formIsValid = true;
+    formIsValid = form.every(el => el.valid && formIsValid);
+
+    return { copyForm, formIsValid };
+  }
+
+  resetFileHandler = () => {
+    this.setState(() => {
+      return { file: '', previewUrl: '' }
+    })
+  }
+
   render() {
     return (
       <ProductsContext.Provider value={{
@@ -224,7 +304,9 @@ class ProductsProvider extends Component {
         increment: this.increment,
         decrement: this.decrement,
         removeItem: this.removeItem,
-        clearCart: this.clearCart
+        clearCart: this.clearCart,
+        validationHandler: this.validationHandler,
+        resetFileHandler: this.resetFileHandler
       }}>
         {this.props.children}
       </ProductsContext.Provider>

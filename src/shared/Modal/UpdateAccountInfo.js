@@ -14,22 +14,22 @@ class UpdateAccountInfo extends Component {
     form1: [
       // First Name
       {
-        id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: {
+        id: '', valid: true, validation: { required: false, touched: false }, elType: 'input', attributes: {
           type: 'text', placeholder: 'first name'
         }, value: '', pattern: ""
       },
 
       // Last Name
-      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'last name' }, value: '', pattern: "" },
+      { id: '', valid: true, validation: { required: false, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'last name' }, value: '', pattern: "" },
 
       // Email
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'email' }, value: '', pattern: '(?=.*@)' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email (required)' }, value: '', pattern: '(?=.*@)' },
 
       // Password
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: "" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'password', placeholder: 'password (required)' }, value: '', pattern: "" },
 
       // New Password
-      { id: 'a password containing at least 8 characters', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'new password' }, value: '', pattern: ".{8,}" },
+      { id: 'a password containing at least 8 characters', valid: true, validation: { required: false, touched: false }, elType: 'input', attributes: { type: 'password', placeholder: 'new password' }, value: '', pattern: ".{8,}" },
     ],
     form1IsValid: false
   }
@@ -76,7 +76,7 @@ class UpdateAccountInfo extends Component {
       this.setState(() => {
         return { isLoading: true }
       });
-      const response = await fetch(`http://localhost:5000/api/users/update-user`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/update-user`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -97,8 +97,6 @@ class UpdateAccountInfo extends Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-
-      console.log(responseData)
 
     } catch (error) {
       this.context.setErrorHandler(error)

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import './App.css';
@@ -22,7 +22,6 @@ const App = () => {
     const storedData = JSON.parse(localStorage.getItem('userData'));
     if (storedData && storedData.token && new Date(storedData.expiration) > new Date()) {
       toggleSignedInHandler(storedData, new Date(storedData.expiration));
-      console.log(storedData)
     }
   }, [toggleSignedInHandler]);
 

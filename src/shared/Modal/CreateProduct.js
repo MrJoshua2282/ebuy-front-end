@@ -16,16 +16,16 @@ class UpdateAccountInfo extends Component {
     form1: [
       // Product Name
       {
-        id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: {
+        id: '', valid: false, validation: { required: true, touched: true }, elType: 'input', attributes: {
           type: 'text', placeholder: 'product name'
         }, value: '', pattern: ".{1,}"
       },
 
       // Price
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: 0 }, value: '', pattern: ".{1,}" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: "0.01", step: ".01" }, value: '', pattern: ".{1,}" },
 
       // Description
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'textarea', attributes: { type: 'text', placeholder: 'description' }, value: '', files: '', pattern: ".{1,}" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'textarea', attributes: { type: 'text', placeholder: 'description' }, value: '', pattern: ".{1,}" },
 
       // Image
       { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'file', placeholder: 'image', accept: '.jpg, .png,.jpeg' }, value: '', pattern: ".{1,}" },
@@ -34,7 +34,7 @@ class UpdateAccountInfo extends Component {
       { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: '', pattern: ".{1,}" },
 
       // Inventory
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory count', min: 0 }, value: '', pattern: ".{1,}" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory count', min: "0", step: "1" }, value: '', pattern: ".{1,}" },
     ],
     form1IsValid: false
   }
@@ -45,9 +45,9 @@ class UpdateAccountInfo extends Component {
       isValid = value.trim() !== '' && isValid;
     }
 
-    if (validation.minLength) {
-      isValid = value.length >= validation.minLength && isValid;
-    }
+    // if (validation.minLength) {
+    //   isValid = value.length >= validation.minLength && isValid;
+    // }
     if (pattern) {
       isValid = value.search(pattern) > -1;
     }
@@ -104,7 +104,7 @@ class UpdateAccountInfo extends Component {
 
       this.setState({ isLoading: true })
 
-      const response = await fetch(`http://localhost:5000/api/products`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -112,10 +112,7 @@ class UpdateAccountInfo extends Component {
         }
       })
 
-      console.log(response)
-
       const responseData = await response.json();
-      console.log(responseData)
 
       if (!response.ok) {
         throw new Error(responseData.message);
@@ -128,7 +125,6 @@ class UpdateAccountInfo extends Component {
         return el;
       });
       this.setState({ form1: copyForm, form1IsValid: false, file: '' });
-      // console.log(responseData)
 
     } catch (error) {
       this.context.setErrorHandler(error)
@@ -157,7 +153,7 @@ class UpdateAccountInfo extends Component {
       <React.Fragment>
         <form onSubmit={this.createProductHandler} >
           <Title title='Create Product' />
-          {this.state.file && <div><img style={{ width: '5rem', height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
+          {this.state.file && <div><img style={{ height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Create!</FormBtn>}
         </form>

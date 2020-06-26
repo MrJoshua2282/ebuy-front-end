@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
@@ -21,7 +22,7 @@ class DeleteAccount extends Component {
       },
 
       // Password
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: ".{1,}" },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'password', placeholder: 'password' }, value: '', pattern: ".{1,}" },
     ],
     form1IsValid: false
   }
@@ -69,7 +70,7 @@ class DeleteAccount extends Component {
       this.setState(() => {
         return { isLoading: true }
       })
-      const response = await fetch(`http://localhost:5000/api/products`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/delete-user/5ef49b1425cc0971d99c9e42`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -82,11 +83,6 @@ class DeleteAccount extends Component {
         })
       })
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message);
-      }
       let copyForm = [...this.state.form1];
       copyForm.map(el => {
         el.value = '';
@@ -95,11 +91,14 @@ class DeleteAccount extends Component {
         return el;
       });
       this.setState({ form1: copyForm, form1IsValid: false });
-      console.log(responseData)
+      this.props.history.replace('/');
+      this.context.toggleSignedInHandler();
+      this.context.closeModalHandler();
 
     } catch (error) {
       this.context.setErrorHandler(error)
       this.context.toggleErrorModalHandler();
+
     }
     this.setState(() => {
       return { isLoading: false }
@@ -123,7 +122,7 @@ class DeleteAccount extends Component {
     return (
       <React.Fragment>
         <form onSubmit={this.createProductHandler} >
-          <Title title='Create Product' />
+          <Title title='Delete Account' />
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn className='clearBtn' id='danger' type='submit' disabled={!this.state.form1IsValid}>Delete Account</FormBtn>}
         </form>
@@ -132,4 +131,4 @@ class DeleteAccount extends Component {
   }
 }
 
-export default DeleteAccount;
+export default withRouter(DeleteAccount);

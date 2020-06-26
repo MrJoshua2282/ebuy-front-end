@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import './AccProdList.css';
 
 // import AccProdItem from './AccProdItem';
@@ -9,24 +9,23 @@ import { ReturnBtn } from '../../shared/Btn/Btns';
 import { ProductsContext } from '../../context';
 
 export default function AccProdList() {
-  const userId = useParams().userId;
+  // const userId = useParams().userId;
   const [isLoading, setIsLoading] = useState(false);
   const [loadedProducts, setLoadedProducts] = useState(false);
   const context = useContext(ProductsContext);
-  const { setErrorHandler, toggleErrorModalHandler } = context;
+  const { setErrorHandler, toggleErrorModalHandler, userId } = context;
 
   useEffect(() => {
     const getData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:5000/api/products/user-products/5ef3b36bc4b73866e6a53e6a
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/user-products/${userId}
         `, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           }
         })
-
         const responseData = await response.json();
 
         if (!response.ok) {
@@ -34,8 +33,6 @@ export default function AccProdList() {
         }
 
         setLoadedProducts(responseData.products);
-
-        // console.log(responseData.products.id)
 
       } catch (error) {
         setErrorHandler(error);
@@ -53,7 +50,7 @@ export default function AccProdList() {
       return (
         <form key={i}>
           <div className='account-header'>
-            <img style={{ width: '5rem', height: '5rem' }} src={`http://localhost:5000/${el.image}`} alt="product" className="account-product-img" />
+            <img style={{ height: '5rem' }} src={`${process.env.REACT_APP_ASSET_URL}/${el.image}`} alt="product" className="account-product-img" />
             <span className="account-title">{el.title}</span>
             <span className="account-price">$ {el.price}</span>
             <span className="account-company">{el.company}</span>

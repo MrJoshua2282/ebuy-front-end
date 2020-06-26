@@ -6,12 +6,12 @@ import Trash from '../../images/trash';
 
 export default function CartItem(props) {
   const context = useContext(ProductsContext)
-  const { id, title, price, img, count, total } = props.product;
+  const { id, title, price, image, count, total } = props.product;
 
   return (
     <div>
       <span className='cart-list'>
-        <img style={{ width: '5rem', height: '5rem' }} className='cartItem-img' src={img} alt='product' />
+        <img style={{ height: '5rem' }} className='cartItem-img' src={`${process.env.REACT_APP_ASSET_URL}/${image}`} alt='product' />
         <span>{title}</span>
         <span>$ {price}</span>
         <span >

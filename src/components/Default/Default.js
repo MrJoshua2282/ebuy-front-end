@@ -4,7 +4,6 @@ import './Default.css';
 
 export default class Default extends Component {
   render() {
-    console.log(this.props)
     return (
       <div className='errorPage'>
         <h1>404</h1>

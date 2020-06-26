@@ -11,18 +11,19 @@ export default class Details extends Component {
     return (
       <ProductsConsumer>
         {(value) => {
-          const { id, company, img, info, price, title, inCart } = value.detailProduct;
+          const { id, company, image, description, price, title, inCart } = value.detailProduct;
+          console.log(value.detailProduct)
           return (
             <React.Fragment>
               <Title title={title} />
               <div className='details-container'>
-                <img src={img} alt='product' />
+                <img className='details-img' style={{ width: '50%' }} src={`${process.env.REACT_APP_ASSET_URL}/${image}`} alt='product' />
                 <div>
                   <h2>{title}</h2>
                   <h4 className='madeBy'>made by: {company}</h4>
                   <strong>${price}</strong>
-                  <p>info</p>
-                  <p>{info}</p>
+                  <p>description</p>
+                  <p>{description}</p>
 
                   <div>
                     <Link to='/'>

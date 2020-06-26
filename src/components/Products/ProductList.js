@@ -3,25 +3,26 @@ import React, { Component } from 'react';
 import './ProductList.css';
 import Product from './Product';
 import Title from '../../shared/Title/Title';
-import { ProductsConsumer } from '../../context';
+import Spinner from '../../shared/Spinner/Spinner';
+import { ProductsContext } from '../../context';
 
 export default class ProductList extends Component {
-  state = {
-  }
+  static contextType = ProductsContext;
   render() {
 
+    let list;
+    if (this.context.products) {
+      list = this.context.products.map((el, i) => {
+        return <Product
+          key={i} product={el} ></Product>
+      })
+    }
     return (
       <div >
         <Title name='our' title='products' />
         <div className='all-products-container'>
-          <ProductsConsumer>
-            {(value) => {
-              return value.products.map((el, i) => {
-                return <Product
-                  key={i} product={el} ></Product>
-              })
-            }}
-          </ProductsConsumer>
+          {this.context.isLoading && <Spinner />}
+          {!this.context.isLoading && list}
         </div>
       </div>
     )

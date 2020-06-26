@@ -28,7 +28,7 @@ const SignUpLogin = (props) => {
     { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'last name' }, value: '', pattern: '(?=.*[a-zA-Z]).{1,}' },
 
     // Email
-    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'email' }, value: '', pattern: '(?=.*[@])' },
+    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: '(?=.*[@])' },
 
     // Password
     { id: 'a password containing at least 8 characters', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: ".{8,}" },
@@ -37,16 +37,12 @@ const SignUpLogin = (props) => {
 
   const [form2, setForm2] = useState([
     // Email
-    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'email' }, value: '', pattern: '(?=.*@)' },
+    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: '(?=.*@)' },
 
     // Password
     { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: '' },
   ]
   )
-
-  // useEffect(() => {
-  //   console.log(context)
-  // })
 
   const checkValidity = (value, validation, pattern) => {
     let isValid = true;
@@ -98,7 +94,7 @@ const SignUpLogin = (props) => {
     let response;
     try {
       setIsLoadingLogin(true)
-      response = await fetch(`http://localhost:5000/api/users/login`,
+      response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/login`,
         {
           method: 'POST',
           headers: {
@@ -142,7 +138,7 @@ const SignUpLogin = (props) => {
     let response;
     try {
       setIsLoadingSignup(true);
-      response = await fetch(`http://localhost:5000/api/users/signup`,
+      response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/signup`,
         {
           method: 'POST',
           headers: {
@@ -170,14 +166,10 @@ const SignUpLogin = (props) => {
         return el;
       });
       setForm1(copyForm);
+      context.toggleSignedInHandler(responseData)
       history.push('/');
 
-      context.toggleSignedInHandler(responseData)
-      // context.userId
-
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       context.setErrorHandler(error || 'Something went wrong, please try again');
       context.toggleErrorModalHandler();
     }

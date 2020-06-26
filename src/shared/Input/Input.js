@@ -4,11 +4,11 @@ import './GlobalInput.css';
 import { ReturnBtn } from '../Btn/Btns'
 
 const Input = (props) => {
-  let element = null;
+  let element = '';
   let validationClass;
-  let validationError = null;
+  let validationError = '';
   if (!props.valid && props.shouldValidate && props.touched) {
-    validationClass = 'invalid-form1 ';
+    validationClass = 'invalid-form1';
   }
 
   if (!props.valid && props.touched && props.valueType) {

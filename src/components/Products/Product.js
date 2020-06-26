@@ -8,14 +8,14 @@ import Cart from '../../images/cart';
 
 export default class Products extends Component {
   render() {
-    const { id, title, img, price, inCart } = this.props.product;
+    const { id, title, image, price, inCart } = this.props.product;
     return (
       <ProductsConsumer>
         {(value) => {
 
           return (
             <div className='card' onClick={() => value.handleDetail(id)}>
-              <Link to='/details' className='card-link'><img className='card-link-img' src={img} alt='product' /></Link>
+              <Link to='/details' className='card-link'><img className='card-link-img' src={`${process.env.REACT_APP_ASSET_URL}/${image}`} alt={`${title}`} /></Link>
 
               {!inCart && <Link className='card-link-cart' to='/' onClick={() => {
                 value.addToCart(id);

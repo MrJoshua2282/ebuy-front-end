@@ -9,13 +9,12 @@ import { TabBtn } from '../../shared/Btn/Btns';
 const Account = () => {
 
   const context = useContext(ProductsContext);
-  const { openModalHandler, userInfo } = context;
+  const { openModalHandler } = context;
 
   return (
     <React.Fragment>
       <Title title='Account' />
-      {/* <Title title={`${userInfo.user.firstName}`} /> */}
-      <Title title={`Update me later in account`} />
+      <Title title={`${context.name}`} />
       <div className='account-btn-div'>
         <TabBtn className='btn_product' onClick={() => openModalHandler('createProduct')}>create item</TabBtn>
         <br />

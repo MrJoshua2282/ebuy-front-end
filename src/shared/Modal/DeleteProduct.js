@@ -21,7 +21,7 @@ class DeleteProduct extends Component {
       this.setState(() => {
         return { isLoading: true }
       })
-      await fetch(`http://localhost:5000/api/products/${this.context.productForUpdating.id}`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/${this.context.productForUpdating.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -7,12 +7,12 @@ import { ProductsContext } from '../../context';
 
 export default function ProductCard() {
   const context = useContext(ProductsContext);
-  const { img, title, price } = context.modalProduct;
+  const { image, title, price } = context.modalProduct;
   const { closeModalHandler } = context;
   return (
     <React.Fragment>
       <h2>Item added to cart</h2>
-      <div><img className='modal-img' src={img} alt='product' /></div>
+      <div><img className='modal-img' src={`${process.env.REACT_APP_ASSET_URL}/${image}`} alt='product' /></div>
       <div className='modal-title'>{title}</div>
       <div className='modal-price'>Price: $ {price}</div>
       <ReturnBtn onClick={() => closeModalHandler()}>Continue Shopping</ReturnBtn>

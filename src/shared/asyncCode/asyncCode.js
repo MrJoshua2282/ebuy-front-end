@@ -24,8 +24,6 @@
 
 //     setLoadedProducts(responseData.products);
 
-//     // console.log(responseData.products.id)
-
 //   } catch (error) {
 //     context.setErrorHandler(error);
 //     context.toggleErrorModalHandler();

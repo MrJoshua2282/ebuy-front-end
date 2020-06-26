@@ -7,11 +7,6 @@ import { ProductsContext } from '../../context';
 
 class Navbar extends Component {
   static contextType = ProductsContext;
-  componentDidUpdate() {
-    // console.log(this.context.userInfo.user.id)
-    // console.log(this.props, 'this is props')
-    console.log(this.context.name)
-  }
 
   charConverter = (firstName) => {
     if (!firstName) return '';

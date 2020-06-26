@@ -36,10 +36,10 @@ class UpdateProduct extends Component {
       { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: `${this.context.productForUpdating.company}`, pattern: '', label: 'Company' },
 
       // Price
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price' }, value: `${this.context.productForUpdating.price}`, pattern: "", label: 'Price' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: "0.01", step: ".01" }, value: `${this.context.productForUpdating.price}`, pattern: "", label: 'Price' },
 
       // Inventory
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory' }, value: `${this.context.productForUpdating.inventory}`, pattern: "", label: 'Inventory' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory', min: "0", step: "1" }, value: `${this.context.productForUpdating.inventory}`, pattern: "", label: 'Inventory' },
 
       // Description
       { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'description' }, value: `${this.context.productForUpdating.description}`, pattern: "", label: 'Description' },
@@ -113,7 +113,7 @@ class UpdateProduct extends Component {
       formData.append('inventory', this.state.form1[4].value);
       formData.append('description', this.state.form1[5].value);
 
-      const response = await fetch(`http://localhost:5000/api/products/${this.context.productForUpdating.id}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/${this.context.productForUpdating.id}`, {
         method: 'PATCH',
         body: formData,
         headers: {
@@ -131,7 +131,6 @@ class UpdateProduct extends Component {
       history.replace('/');
       history.replace('/account');
       this.context.closeModalHandler();
-      // console.log(responseData)
 
     } catch (error) {
       this.context.setErrorHandler(error)
@@ -145,7 +144,6 @@ class UpdateProduct extends Component {
 
 
   render() {
-    console.log(this.state.file)
     const elForm = this.state.form1.map((el, i) => {
       return <Input
         key={i}
@@ -164,7 +162,7 @@ class UpdateProduct extends Component {
       <React.Fragment>
         <form onSubmit={this.updateAccountHandler}>
           <Title title='Update Item' />
-          {this.state.file && <div><img style={{ width: '5rem', height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
+          {this.state.file && <div><img style={{ height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit'>Submit Update</FormBtn>}
         </form>
