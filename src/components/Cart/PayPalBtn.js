@@ -5,7 +5,8 @@ export default class MyApp extends React.Component {
   render() {
     const onSuccess = (payment) => {
       // Congratulation, it came here means everything's fine!
-      console.log("The payment was succeeded!", payment);
+      console.log("The payment was successful!", payment);
+      this.props.updateBackendInventory()
       this.props.clearCart();
       this.props.history.push('/');
       // You can bind the "payment" object's value to your state or props or whatever here, please see below for sample returned data

@@ -14,8 +14,8 @@ export default class Cart extends Component {
       <section>
         <ProductsConsumer>
           {value => {
-            const { cart } = value;
-
+            const { cart, cartSubTotal, cartTax, cartTotal, clearCart, updateBackendInventory } = value;
+            console.log(cartTotal)
             if (cart.length > 0) {
               return (
                 <React.Fragment>
@@ -31,12 +31,12 @@ export default class Cart extends Component {
                   <CartList value={value} />
                   <div className='cart-final-values-div'>
                     <Link to='/' >
-                      <DangerClearBtn onClick={() => value.clearCart()}>CLEAR CART</DangerClearBtn>
+                      <DangerClearBtn onClick={() => clearCart()}>CLEAR CART</DangerClearBtn>
                     </Link>
-                    <span className='finalValues' >SUBTOTAL: $ {value.cartSubTotal.toFixed(2)}</span>
-                    <span className='finalValues'>TAX: $ {value.cartTax.toFixed(2)}</span>
-                    <span className='finalValues'>TOTAL: $ {value.cartTotal.toFixed(2)}</span>
-                    <PayPalBtn total={value.cartTotal} clearCart={value.clearCart} history={this.props.history} />
+                    <span className='finalValues' >SUBTOTAL: $ {cartSubTotal.toFixed(2)}</span>
+                    <span className='finalValues'>TAX: $ {cartTax.toFixed(2)}</span>
+                    <span className='finalValues'>TOTAL: $ {cartTotal.toFixed(2)}</span>
+                    <PayPalBtn total={+cartTotal.toFixed(2)} clearCart={clearCart} history={this.props.history} updateBackendInventory={updateBackendInventory} />
                   </div>
                 </React.Fragment>
               )

@@ -5,6 +5,7 @@ const ProductsContext = React.createContext();
 
 class ProductsProvider extends Component {
   state = {
+    updateInventory: '',
     isLoading: false,
     file: '',
     previewUrl: '',
@@ -31,6 +32,15 @@ class ProductsProvider extends Component {
   }
 
   setProducts = () => {
+    // let prod = [];
+    // storeProducts.forEach(item => {
+    //   const singleItem = { ...item };
+    //   prod = [...prod, singleItem];
+    // });
+    // this.setState(() => {
+    //   return { products: prod }
+    // });
+
     const getData = async () => {
       try {
         this.setState({ isLoading: true });
@@ -41,13 +51,17 @@ class ProductsProvider extends Component {
           }
         });
         const responseData = await response.json();
-        console.log(responseData.products);
 
         if (!response.ok) {
           throw new Error(responseData.message);
         }
+        let prod = [];
+        responseData.products.forEach(el => {
+          const product = { ...el, count: 0, total: 0 };
+          prod = [...prod, product];
+        });
         this.setState(() => {
-          return { products: responseData.products }
+          return { products: prod }
         });
 
       } catch (error) {
@@ -60,6 +74,45 @@ class ProductsProvider extends Component {
     getData();
   }
 
+  updateInventory = () => {
+    let updateInventory = [];
+    this.state.cart.forEach(el => {
+      updateInventory.push({ id: el.id, newInventory: el.inventory - el.count });
+    })
+    this.setState({ updateInventory: updateInventory })
+  }
+
+  updateBackendInventory = async () => {
+    let newObj = [...this.state.updateInventory];
+    // newObj = newObj.map(el => el.)
+    try {
+      this.setState({ isLoading: true });
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/update-many`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          newObj
+        }),
+        // body: newObj,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      // console.log(responseData)
+    } catch (error) {
+      this.setErrorHandler(error);
+      this.toggleErrorModalHandler();
+    }
+
+    this.setState({ isLoading: false });
+    this.setProducts();
+  }
+
+
   // details page
   handleDetail = (id) => {
     const product = this.state.products.find(el => el.id === id);
@@ -70,16 +123,18 @@ class ProductsProvider extends Component {
   // add to cart
   addToCart = (id) => {
     let cartArr = [];
-    let copyProducts = [...this.state.products]
-      .map(el => {
-        if (el.id === id) {
-          el.count += 1;
-          el.inCart = true;
-          el.total = el.price * el.count;
-          cartArr.push(el);
-        }
-        return el;
-      });
+    let copyProducts = [...this.state.products];
+
+    copyProducts = copyProducts.map(el => {
+      if (el.id === id && el.count < el.inventory) {
+        el.count += 1;
+        el.inCart = true;
+        el.total = el.price * el.count;
+        cartArr.push(el);
+      }
+      return el;
+    });
+
 
     this.setState(() => {
       return { products: copyProducts, cart: [...this.state.cart, ...cartArr] };
@@ -156,7 +211,7 @@ class ProductsProvider extends Component {
 
   increment = (id) => {
     const copyProducts = [...this.state.products].map(el => {
-      if (el.id === id) {
+      if (el.id === id && el.count < el.inventory) {
         el.count += 1;
         el.total = el.count * el.price;
       }
@@ -214,14 +269,16 @@ class ProductsProvider extends Component {
   }
 
   compileTotalValuesHandler = () => {
-    let subTotal = [...this.state.products]
-      .reduce((acc, cur) => {
-        return acc + cur.total;
-      }, 0);
+    let subTotal = [...this.state.cart];
+
+    subTotal = subTotal.reduce((acc, cur) => {
+      return acc + cur.total;
+    }, 0);
 
     let tax = subTotal * .07;
 
     let cartTotal = subTotal + tax;
+
 
     this.setState(() => {
       return {
@@ -229,7 +286,7 @@ class ProductsProvider extends Component {
         cartTax: tax,
         cartTotal: cartTotal
       };
-    })
+    }, () => this.updateInventory())
   }
 
 
@@ -306,7 +363,8 @@ class ProductsProvider extends Component {
         removeItem: this.removeItem,
         clearCart: this.clearCart,
         validationHandler: this.validationHandler,
-        resetFileHandler: this.resetFileHandler
+        resetFileHandler: this.resetFileHandler,
+        updateBackendInventory: this.updateBackendInventory
       }}>
         {this.props.children}
       </ProductsContext.Provider>

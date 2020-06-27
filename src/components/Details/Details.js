@@ -12,7 +12,6 @@ export default class Details extends Component {
       <ProductsConsumer>
         {(value) => {
           const { id, company, image, description, price, title, inCart } = value.detailProduct;
-          console.log(value.detailProduct)
           return (
             <React.Fragment>
               <Title title={title} />
@@ -31,7 +30,6 @@ export default class Details extends Component {
                     </Link>
                     <GoToCartBtn onClick={() => {
                       value.addToCart(id);
-                      // value.openModalHandler(id);
                     }} disabled={inCart ? true : false} >{inCart ? 'In Cart' : 'Add To Cart'} </GoToCartBtn>
                   </div>
                 </div>
