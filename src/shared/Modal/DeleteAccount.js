@@ -27,39 +27,8 @@ class DeleteAccount extends Component {
     form1IsValid: false
   }
 
-
-  checkValidity = (value, validation, pattern) => {
-    let isValid = true;
-    if (validation.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-
-    if (validation.minLength) {
-      isValid = value.length >= validation.minLength && isValid;
-    }
-    if (pattern) {
-      isValid = value.search(pattern) > -1;
-    }
-    return isValid;
-  }
-
   inputChangeHandler = (event, itemId, form) => {
-    const { value } = event.target;
-
-    let copyForm = [...form];
-
-    copyForm = copyForm.map((el, i) => {
-      if (i === itemId) {
-        el.value = value;
-        el.valid = this.checkValidity(el.value, el.validation, el.pattern);
-        el.validation.touched = true;
-      }
-      return el;
-    });
-
-    let formIsValid = true;
-    formIsValid = form.every(el => el.valid && formIsValid);
-
+    const { copyForm, formIsValid } = this.context.validationHandler(event, itemId, form)
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
   }
 
@@ -87,11 +56,13 @@ class DeleteAccount extends Component {
       copyForm.map(el => {
         el.value = '';
         el.valid = false;
-        el.validation.touched = false;
+        el.touched = false;
         return el;
       });
       this.setState({ form1: copyForm, form1IsValid: false });
-      this.props.history.replace('/');
+      setTimeout(() => {
+        this.props.history.replace('/');
+      }, 250);
       this.context.toggleSignedInHandler();
       this.context.closeModalHandler();
 

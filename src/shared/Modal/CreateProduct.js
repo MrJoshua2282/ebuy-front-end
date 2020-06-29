@@ -10,8 +10,6 @@ import { ProductsContext } from '../../context';
 class UpdateAccountInfo extends Component {
   static contextType = ProductsContext;
   state = {
-    file: '',
-    previewUrl: '',
     isLoading: false,
     form1: [
       // Product Name
@@ -39,53 +37,8 @@ class UpdateAccountInfo extends Component {
     form1IsValid: false
   }
 
-  checkValidity = (value, validation, pattern) => {
-    let isValid = true;
-    if (validation.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-
-    // if (validation.minLength) {
-    //   isValid = value.length >= validation.minLength && isValid;
-    // }
-    if (pattern) {
-      isValid = value.search(pattern) > -1;
-    }
-    return isValid;
-  }
-
-  fileReaderHandler = (file) => {
-
-    this.setState({ file: file });
-
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      this.setState({ previewUrl: fileReader.result });
-    };
-    fileReader.readAsDataURL(file);
-  }
-
   inputChangeHandler = (event, itemId, form) => {
-    const { value } = event.target;
-
-    let copyForm = [...form];
-
-    copyForm = copyForm.map((el, i) => {
-      if (i === itemId) {
-        if (el.attributes.type === 'file') {
-          this.fileReaderHandler(event.target.files[0]);
-        }
-
-        el.value = value;
-        el.valid = this.checkValidity(el.value, el.validation, el.pattern);
-        el.validation.touched = true;
-      }
-      return el;
-    });
-
-    let formIsValid = true;
-    formIsValid = form.every(el => el.valid && formIsValid);
-
+    const { copyForm, formIsValid } = this.context.validationHandler(event, itemId, form)
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
   }
 
@@ -98,7 +51,7 @@ class UpdateAccountInfo extends Component {
       formData.append('title', this.state.form1[0].value);
       formData.append('price', this.state.form1[1].value);
       formData.append('description', this.state.form1[2].value);
-      formData.append('image', this.state.file);
+      formData.append('image', this.context.file);
       formData.append('company', this.state.form1[4].value);
       formData.append('inventory', this.state.form1[5].value);
 
@@ -121,10 +74,11 @@ class UpdateAccountInfo extends Component {
       copyForm.map(el => {
         el.value = '';
         el.valid = false;
-        el.validation.touched = false;
+        el.touched = false;
         return el;
       });
-      this.setState({ form1: copyForm, form1IsValid: false, file: '' });
+      this.setState({ form1: copyForm, form1IsValid: false });
+      this.context.resetFileHandler();
 
     } catch (error) {
       this.context.setErrorHandler(error)
@@ -153,7 +107,7 @@ class UpdateAccountInfo extends Component {
       <React.Fragment>
         <form onSubmit={this.createProductHandler} >
           <Title title='Create Product' />
-          {this.state.file && <div><img style={{ height: '5rem' }} src={this.state.previewUrl} alt='preview' /></div>}
+          {this.state.file && <div><img style={{ height: '5rem' }} src={this.context.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Create!</FormBtn>}
         </form>

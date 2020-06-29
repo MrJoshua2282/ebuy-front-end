@@ -28,7 +28,7 @@ const SignUpLogin = (props) => {
     { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'last name' }, value: '', pattern: '(?=.*[a-zA-Z]).{1,}' },
 
     // Email
-    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: '(?=.*[@])' },
+    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: ".{1,}" },
 
     // Password
     { id: 'a password containing at least 8 characters', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: ".{8,}" },
@@ -37,60 +37,29 @@ const SignUpLogin = (props) => {
 
   const [form2, setForm2] = useState([
     // Email
-    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: '(?=.*@)' },
+    { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'email', placeholder: 'email' }, value: '', pattern: ".{1,}" },
 
     // Password
-    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: '' },
+    { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'password' }, value: '', pattern: ".{1,}" },
   ]
   )
 
-  const checkValidity = (value, validation, pattern) => {
-    let isValid = true;
-    if (validation.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-
-    if (validation.minLength) {
-      isValid = value.length >= validation.minLength && isValid;
-    }
-    if (pattern) {
-      isValid = value.search(pattern) > -1;
-    }
-    return isValid;
-  }
-
   const inputChangeHandler = (event, itemId, form) => {
-    const { value } = event.target;
-
-    let copyForm = [...form];
-
-    copyForm = copyForm.map((el, i) => {
-      if (i === itemId) {
-        el.value = value;
-        el.valid = checkValidity(el.value, el.validation, el.pattern);
-        el.validation.touched = true;
-      }
-      return el;
-    });
-
-    let formIsValid = true;
-    formIsValid = form.every(el => el.valid && formIsValid);
+    const { copyForm, formIsValid } = context.validationHandler(event, itemId, form)
 
     if (form === form1) {
       setForm1(copyForm)
       setForm1IsValid(formIsValid);
-      // this.setState({ form1: copyForm, form1IsValid: formIsValid });
 
     } else if (form === form2) {
       setForm2(copyForm)
       setForm2IsValid(formIsValid);
-      // this.setState({ form2: copyForm, form2IsValid: formIsValid });
-
     }
   }
 
   const loginHandler = async (event) => {
     event.preventDefault();
+
     let response;
     try {
       setIsLoadingLogin(true)
@@ -117,24 +86,25 @@ const SignUpLogin = (props) => {
       copyForm.map(el => {
         el.value = '';
         el.valid = false;
-        el.validation.touched = false;
+        el.touched = false;
         return el;
       });
       setForm2(copyForm);
-      history.push('/');
       context.toggleSignedInHandler(responseData);
-      // context.userId
+      setTimeout(() => {
+        history.push('/');
+      }, 250);
 
     } catch (error) {
       context.setErrorHandler(error || 'Something went wrong, please try again');
       context.toggleErrorModalHandler();
     }
     setIsLoadingLogin(false)
-
   }
 
   const signupHandler = async (event) => {
     event.preventDefault();
+
     let response;
     try {
       setIsLoadingSignup(true);
@@ -162,12 +132,14 @@ const SignUpLogin = (props) => {
       copyForm.map(el => {
         el.value = '';
         el.valid = false;
-        el.validation.touched = false;
+        el.touched = false;
         return el;
       });
       setForm1(copyForm);
       context.toggleSignedInHandler(responseData)
-      history.push('/');
+      setTimeout(() => {
+        history.push('/');
+      }, 250);
 
     } catch (error) {
       context.setErrorHandler(error || 'Something went wrong, please try again');

@@ -15,7 +15,6 @@ export default class Cart extends Component {
         <ProductsConsumer>
           {value => {
             const { cart, cartSubTotal, cartTax, cartTotal, clearCart, updateBackendInventory } = value;
-            console.log(cartTotal)
             if (cart.length > 0) {
               return (
                 <React.Fragment>

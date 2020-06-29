@@ -92,7 +92,6 @@ class ProductsProvider extends Component {
         body: JSON.stringify({
           newObj
         }),
-        // body: newObj,
         headers: {
           'Content-Type': 'application/json'
         }
@@ -102,7 +101,6 @@ class ProductsProvider extends Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      // console.log(responseData)
     } catch (error) {
       this.setErrorHandler(error);
       this.toggleErrorModalHandler();
@@ -112,15 +110,13 @@ class ProductsProvider extends Component {
     this.setProducts();
   }
 
-
-  // details page
   handleDetail = (id) => {
     const product = this.state.products.find(el => el.id === id);
     this.setState(() => {
       return { detailProduct: product };
     });
   }
-  // add to cart
+
   addToCart = (id) => {
     let cartArr = [];
     let copyProducts = [...this.state.products];
@@ -237,7 +233,6 @@ class ProductsProvider extends Component {
     }, () => this.compileTotalValuesHandler());
   }
 
-  // remove all items with this id
   removeItem = (id) => {
     const copyProducts = [...this.state.products].map(el => {
       if (el.id === id) {
@@ -289,26 +284,25 @@ class ProductsProvider extends Component {
     }, () => this.updateInventory())
   }
 
-
-  checkValidity = (value, validation, pattern) => {
-    let isValid = true;
-    if (validation.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-
-    if (validation.minLength) {
-      isValid = value.length >= validation.minLength && isValid;
-    }
-    if (pattern) {
-      isValid = value.search(pattern) > -1;
-    }
-    return isValid;
-  }
-
   validationHandler = (event, itemId, form) => {
+    /* Validation */
+    const checkValidity = (value, validation, pattern) => {
+      let isValid = true;
+      if (validation.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
 
+      if (validation.minLength) {
+        isValid = value.length >= validation.minLength && isValid;
+      }
+      if (pattern) {
+        isValid = value.search(pattern) > -1;
+      }
+      return isValid;
+    }
+
+    /* FileReader */
     const fileReaderHandler = (file) => {
-      console.log(file)
       this.setState({ file: file });
 
       const fileReader = new FileReader();
@@ -317,6 +311,8 @@ class ProductsProvider extends Component {
       };
       fileReader.readAsDataURL(file);
     }
+
+    /* Validation */
     const { value } = event.target;
 
     let copyForm = [...form];
@@ -328,8 +324,8 @@ class ProductsProvider extends Component {
         }
 
         el.value = value;
-        el.valid = this.checkValidity(el.value, el.validation, el.pattern);
-        el.validation.touched = true;
+        el.valid = checkValidity(el.value, el.validation, el.pattern);
+        el.touched = true;
       }
       return el;
     });

@@ -40,4 +40,12 @@ body {
 .App {
   background-color: var(--mainWhite);
   position: relative;
+  margin-bottom: 2rem;
+}
+
+
+@media (max-width: 500px) {
+  .App {
+    overflow: scroll;
+  }
 }
