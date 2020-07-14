@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
@@ -6,6 +7,7 @@ import Title from '../Title/Title';
 import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
 import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
 class UpdateAccountInfo extends Component {
   static contextType = ProductsContext;
@@ -39,45 +41,32 @@ class UpdateAccountInfo extends Component {
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
   }
 
-  updateAccountHandler = async (event) => {
-    event.preventDefault();
+  resetForm = (form) => {
+    let copyForm = [...form];
+    copyForm = copyForm.map(el => {
+      el = { ...el };
+      el.value = '';
+      el.valid = false;
+      el.touched = false;
+      return el;
+    });
 
-    try {
-      this.setState(() => {
-        return { isLoading: true }
-      });
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/update-user`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.context.token,
-        },
-        // JSON.stringify() takes js objects/arrays and converts them to json
-        body: JSON.stringify({
-          firstName: this.state.form1[0].value,
-          lastName: this.state.form1[1].value,
-          email: this.state.form1[2].value,
-          password: this.state.form1[3].value,
-          newPassword: this.state.form1[4].value,
-        })
-      })
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message);
-      }
-
-    } catch (error) {
-      this.context.setErrorHandler(error)
-      this.context.toggleErrorModalHandler();
-    }
-
-    this.setState(() => {
-      return { isLoading: false }
-    })
+    this.setState({ form1: copyForm, form1IsValid: false });
   }
 
+  updateAccountHandler = (event) => {
+    event.preventDefault();
+
+    const body = {
+      firstName: this.state.form1[0].value,
+      lastName: this.state.form1[1].value,
+      email: this.state.form1[2].value,
+      password: this.state.form1[3].value,
+      newPassword: this.state.form1[4].value,
+    }
+
+    this.props.updateAccount(body, this.props.token, () => this.resetForm(this.state.form1));
+  }
   render() {
     const elForm = this.state.form1.map((el, i) => {
       return <Input
@@ -104,4 +93,18 @@ class UpdateAccountInfo extends Component {
   }
 }
 
-export default UpdateAccountInfo;
+const mapStateToProps = state => {
+  return {
+    token: state.token,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setErrorHandler: (message) => dispatch(actionCreators.setErrorHandler(message)),
+    toggleErrorModalHandler: () => dispatch(actionCreators.toggleErrorModalHandler()),
+    updateAccount: (body, token, resetForm) => dispatch(actionCreators.updateAccount(body, token, resetForm))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateAccountInfo);

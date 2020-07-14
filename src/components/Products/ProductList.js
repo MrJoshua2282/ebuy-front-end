@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import './ProductList.css';
 import Product from './Product';
 import Title from '../../shared/Title/Title';
 import Spinner from '../../shared/Spinner/Spinner';
-import { ProductsContext } from '../../context';
 
-export default class ProductList extends Component {
-  static contextType = ProductsContext;
+class ProductList extends Component {
   render() {
-
     let list;
-    if (this.context.products) {
-      list = this.context.products.map((el, i) => {
+    if (this.props.products) {
+      list = this.props.products.map((el, i) => {
         return <Product
           key={i} product={el} ></Product>
       })
@@ -21,10 +19,19 @@ export default class ProductList extends Component {
       <div >
         <Title name='our' title='products' />
         <div className='all-products-container'>
-          {this.context.isLoading && <Spinner />}
-          {!this.context.isLoading && list}
+          {this.props.isLoading && <Spinner />}
+          {!this.props.isLoading && list}
         </div>
       </div>
     )
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    products: state.products,
+    isLoading: state.isLoading
+  }
+}
+
+export default connect(mapStateToProps)(ProductList);

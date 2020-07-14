@@ -1,52 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
-// import { useParams } from 'react-router-dom';
-import './AccProdList.css';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-// import AccProdItem from './AccProdItem';
+import './AccProdList.css';
 import Spinner from '../../shared/Spinner/Spinner';
 import TrashIcon from '../../images/trash';
 import { ReturnBtn } from '../../shared/Btn/Btns';
-import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
-export default function AccProdList() {
-  // const userId = useParams().userId;
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadedProducts, setLoadedProducts] = useState(false);
-  const context = useContext(ProductsContext);
-  const { setErrorHandler, toggleErrorModalHandler, userId } = context;
+const AccProdList = () => {
+  const store = useSelector(store => store);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/user-products/${userId}
-        `, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        const responseData = await response.json();
-
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
-
-        setLoadedProducts(responseData.products);
-
-      } catch (error) {
-        setErrorHandler(error);
-        toggleErrorModalHandler();
-      }
-
-      setIsLoading(false);
-    };
-    getData();
-  }, [userId, setErrorHandler, toggleErrorModalHandler]);
+    dispatch(actionCreators.getUserProducts(store.userId));
+  }, [actionCreators.getUserProducts]);
 
   let list;
-  if (loadedProducts) {
-    list = loadedProducts.map((el, i) => {
+  if (store.setUserProducts) {
+    list = store.setUserProducts.map((el, i) => {
       return (
         <form key={i}>
           <div className='account-header'>
@@ -57,13 +28,13 @@ export default function AccProdList() {
             <span className="account-inventory">{el.inventory}</span>
             <ReturnBtn onClick={(e) => {
               e.preventDefault();
-              context.setProductForUpdatingHandler(el)
-              context.openModalHandler('updateProduct');
+              dispatch(actionCreators.setProductForUpdatingHandler(el));
+              dispatch(actionCreators.openModalHandler('updateProduct'));
             }}>Update Item</ReturnBtn>
             <TrashIcon onClick={(e) => {
               e.preventDefault();
-              context.setProductForUpdatingHandler(el)
-              context.openModalHandler('deleteProduct');
+              dispatch(actionCreators.setProductForUpdatingHandler(el))
+              dispatch(actionCreators.openModalHandler('deleteProduct'));
             }} fill='rgb(108, 196, 255)' style={{ 'cursor': 'pointer' }} />
           </div>
           <div className='account-description'>{el.description}</div>
@@ -73,7 +44,37 @@ export default function AccProdList() {
   }
   return (
     <React.Fragment>
-      {isLoading ? <Spinner /> : list}
+      {store.isLoading ? <Spinner /> : list}
     </React.Fragment>
   )
 }
+// useEffect(() => {
+//   const getData = async () => {
+//     try {
+//       setIsLoading(true);
+//       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/user-products/${userId}
+//       `, {
+//         method: 'GET',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         }
+//       })
+//       const responseData = await response.json();
+
+//       if (!response.ok) {
+//         throw new Error(responseData.message);
+//       }
+
+//       setLoadedProducts(responseData.products);
+
+//     } catch (error) {
+//       setErrorHandler(error);
+//       toggleErrorModalHandler();
+//     }
+
+//     setIsLoading(false);
+//   };
+//   getData();
+// }, [userId, setErrorHandler, toggleErrorModalHandler]);
+
+export default AccProdList;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import './GlobalModal.css';
 import UpdatedAccountInfo from './UpdateAccountInfo';
@@ -7,28 +8,40 @@ import CreateProduct from './CreateProduct';
 import ProductCard from './ProductCard';
 import DeleteAccount from './DeleteAccount';
 import DeleteProduct from './DeleteProduct';
-import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
 class Modal extends Component {
-  static contextType = ProductsContext;
 
   render() {
-    const { showModal, modalType, closeModalHandler } = this.context;
     return (
       <React.Fragment>
-        {showModal && <div className='modal-background' onClick={
-          () => closeModalHandler()}>&#32;</div>}
-        {showModal &&
+        {this.props.showModal && <div className='modal-background' onClick={
+          () => this.props.closeModalHandler()}>&#32;</div>}
+        {this.props.showModal &&
           < div className='modal-card' >
-            {modalType === 'productCard' && <ProductCard />}
-            {modalType === 'updateAccount' && <UpdatedAccountInfo />}
-            {modalType === 'updateProduct' && <UpdateProduct />}
-            {modalType === 'createProduct' && <CreateProduct />}
-            {modalType === 'deleteAccount' && <DeleteAccount />}
-            {modalType === 'deleteProduct' && <DeleteProduct />}
+            {this.props.modalType === 'productCard' && <ProductCard />}
+            {this.props.modalType === 'updateAccount' && <UpdatedAccountInfo />}
+            {this.props.modalType === 'updateProduct' && <UpdateProduct />}
+            {this.props.modalType === 'createProduct' && <CreateProduct />}
+            {this.props.modalType === 'deleteAccount' && <DeleteAccount />}
+            {this.props.modalType === 'deleteProduct' && <DeleteProduct />}
           </div >}
       </React.Fragment>
     )
   }
 }
-export default Modal;
+
+const mapStateToProps = state => {
+  return {
+    showModal: state.showModal,
+    modalType: state.modalType,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    closeModalHandler: () => dispatch(actionCreators.closeModalHandler())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);

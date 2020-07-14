@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom'
-
-
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
 import Title from '../Title/Title';
 import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
-
 import { ProductsContext } from '../../context';
-// const Component = withRouter(({ history, location }) => {
-
-// })
-
+import * as actionCreators from '../../store/actionCreators';
 
 class UpdateProduct extends Component {
   static contextType = ProductsContext;
@@ -28,19 +23,19 @@ class UpdateProduct extends Component {
       },
 
       // Product Name
-      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'product name' }, value: `${this.context.productForUpdating.title}`, pattern: "", label: 'Product Name' },
+      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'product name' }, value: `${this.props.productForUpdating.title}`, pattern: "", label: 'Product Name' },
 
       // Company
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: `${this.context.productForUpdating.company}`, pattern: '', label: 'Company' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'company' }, value: `${this.props.productForUpdating.company}`, pattern: '', label: 'Company' },
 
       // Price
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: "0.01", step: ".01" }, value: `${this.context.productForUpdating.price}`, pattern: "", label: 'Price' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'price', min: "0.01", step: ".01" }, value: `${this.props.productForUpdating.price}`, pattern: "", label: 'Price' },
 
       // Inventory
-      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory', min: "0", step: "1" }, value: `${this.context.productForUpdating.inventory}`, pattern: "", label: 'Inventory' },
+      { id: '', valid: false, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'number', placeholder: 'inventory', min: "0", step: "1" }, value: `${this.props.productForUpdating.inventory}`, pattern: "", label: 'Inventory' },
 
       // Description
-      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'description' }, value: `${this.context.productForUpdating.description}`, pattern: "", label: 'Description' },
+      { id: '', valid: true, validation: { required: true, touched: false }, elType: 'input', attributes: { type: 'text', placeholder: 'description' }, value: `${this.props.productForUpdating.description}`, pattern: "", label: 'Description' },
     ],
     form1IsValid: true
   }
@@ -51,50 +46,61 @@ class UpdateProduct extends Component {
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
   }
 
-  updateAccountHandler = async (event) => {
+
+  updateProductHandler = async (event) => {
     event.preventDefault();
 
-    try {
-      this.setState(() => {
-        return { isLoading: true }
-      });
-      const formData = new FormData();
-      formData.append('image', this.context.file);
-      formData.append('title', this.state.form1[1].value);
-      formData.append('company', this.state.form1[2].value);
-      formData.append('price', this.state.form1[3].value);
-      formData.append('inventory', this.state.form1[4].value);
-      formData.append('description', this.state.form1[5].value);
+    const formData = new FormData();
+    formData.append('image', this.context.file);
+    formData.append('title', this.state.form1[1].value);
+    formData.append('company', this.state.form1[2].value);
+    formData.append('price', this.state.form1[3].value);
+    formData.append('inventory', this.state.form1[4].value);
+    formData.append('description', this.state.form1[5].value);
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/${this.context.productForUpdating.id}`, {
-        method: 'PATCH',
-        body: formData,
-        headers: {
-          Authorization: 'Bearer ' + this.context.token,
-        }
-      })
-      const responseData = await response.json();
+    this.props.updateProduct(formData, this.props.token, this.props.productForUpdating.id, this.context.resetFileHandler)
 
-      if (!response.ok) {
-        throw new Error(responseData.message);
-      }
-      this.context.resetFileHandler();
-      this.context.closeModalHandler();
+    // try {
+    //   this.setState(() => {
+    //     return { isLoading: true }
+    //   });
+    // const formData = new FormData();
+    // formData.append('image', this.context.file);
+    // formData.append('title', this.state.form1[1].value);
+    // formData.append('company', this.state.form1[2].value);
+    // formData.append('price', this.state.form1[3].value);
+    // formData.append('inventory', this.state.form1[4].value);
+    // formData.append('description', this.state.form1[5].value);
 
-      const { history } = this.props;
-      setTimeout(() => {
-        history.replace('/');
-        history.replace('/account');
-      }, 1000);
+    //   const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products/${this.props.productForUpdating.id}`, {
+    //     method: 'PATCH',
+    //     body: formData,
+    //     headers: {
+    //       Authorization: 'Bearer ' + this.props.token,
+    //     }
+    //   })
+    //   const responseData = await response.json();
 
-    } catch (error) {
-      this.context.setErrorHandler(error)
-      this.context.toggleErrorModalHandler();
-    }
+    //   if (!response.ok) {
+    //     throw new Error(responseData.message);
+    //   }
+    //   this.context.resetFileHandler();
+    //   this.props.closeModalHandler();
 
-    this.setState(() => {
-      return { isLoading: false }
-    })
+    //   const { history } = this.props;
+    //   setTimeout(() => {
+    //     history.replace('/');
+    //     history.replace('/account');
+    //   }, 1000);
+
+    // } catch (error) {
+    //   this.props.setErrorHandler(error)
+    //   this.props.toggleErrorModalHandler();
+    // }
+
+    // this.setState(() => {
+    //   return { isLoading: false }
+    // })
   }
 
 
@@ -115,7 +121,7 @@ class UpdateProduct extends Component {
     });
     return (
       <React.Fragment>
-        <form onSubmit={this.updateAccountHandler}>
+        <form onSubmit={this.updateProductHandler}>
           <Title title='Update Item' />
           {this.state.file && <div><img style={{ height: '5rem' }} src={this.context.previewUrl} alt='preview' /></div>}
           {elForm}
@@ -126,4 +132,20 @@ class UpdateProduct extends Component {
   }
 }
 
-export default withRouter(UpdateProduct);
+const mapStateToProps = state => {
+  return {
+    productForUpdating: state.productForUpdating,
+    token: state.token
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    closeModalHandler: () => dispatch(actionCreators.closeModalHandler()),
+    setErrorHandler: (message) => dispatch(actionCreators.setErrorHandler(message)),
+    toggleErrorModalHandler: () => dispatch(actionCreators.toggleErrorModalHandler()),
+    updateProduct: (body, token, productForUpdatingId, resetFile) => dispatch(actionCreators.updateProduct(body, token, productForUpdatingId, resetFile))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(UpdateProduct));

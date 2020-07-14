@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
@@ -6,9 +7,9 @@ import Title from '../Title/Title';
 import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
 import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
 class UpdateAccountInfo extends Component {
-  static contextType = ProductsContext;
   state = {
     isLoading: false,
     form1: [
@@ -37,56 +38,44 @@ class UpdateAccountInfo extends Component {
     form1IsValid: false
   }
 
+  static contextType = ProductsContext;
+
   inputChangeHandler = (event, itemId, form) => {
     const { copyForm, formIsValid } = this.context.validationHandler(event, itemId, form)
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
+  }
+
+  resetForm = (form) => {
+    let copyForm = [...form];
+    copyForm = copyForm.map(el => {
+      el = { ...el };
+      el.value = '';
+      el.valid = false;
+      el.touched = false;
+      return el;
+    });
+
+    this.setState({ form1: copyForm, form1IsValid: false });
   }
 
   createProductHandler = async (event) => {
     event.preventDefault();
     // new FormData() is already available on browsers
     // can add binary data/files/images as well as text data
-    try {
-      const formData = new FormData();
-      formData.append('title', this.state.form1[0].value);
-      formData.append('price', this.state.form1[1].value);
-      formData.append('description', this.state.form1[2].value);
-      formData.append('image', this.context.file);
-      formData.append('company', this.state.form1[4].value);
-      formData.append('inventory', this.state.form1[5].value);
 
-      this.setState({ isLoading: true })
+    const formData = new FormData();
+    formData.append('title', this.state.form1[0].value);
+    formData.append('price', this.state.form1[1].value);
+    formData.append('description', this.state.form1[2].value);
+    formData.append('image', this.context.file);
+    formData.append('company', this.state.form1[4].value);
+    formData.append('inventory', this.state.form1[5].value);
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: 'Bearer ' + this.context.token,
-        }
-      })
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message);
-      }
-      let copyForm = [...this.state.form1];
-      copyForm.map(el => {
-        el.value = '';
-        el.valid = false;
-        el.touched = false;
-        return el;
-      });
-      this.setState({ form1: copyForm, form1IsValid: false });
-      this.context.resetFileHandler();
-
-    } catch (error) {
-      this.context.setErrorHandler(error)
-      this.context.toggleErrorModalHandler();
+    let headers = {
+      Authorization: 'Bearer ' + this.props.token,
     }
-    this.setState(() => {
-      return { isLoading: false }
-    })
+
+    this.props.createProduct(formData, headers, () => this.resetForm(this.state.form1), this.context.resetFileHandler);
   }
 
   render() {
@@ -107,7 +96,7 @@ class UpdateAccountInfo extends Component {
       <React.Fragment>
         <form onSubmit={this.createProductHandler} >
           <Title title='Create Product' />
-          {this.state.file && <div><img style={{ height: '5rem' }} src={this.context.previewUrl} alt='preview' /></div>}
+          {this.state.file && <div><img style={{ height: '5rem' }} src={this.props.previewUrl} alt='preview' /></div>}
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn type='submit' disabled={!this.state.form1IsValid}>Create!</FormBtn>}
         </form>
@@ -116,4 +105,20 @@ class UpdateAccountInfo extends Component {
   }
 }
 
-export default UpdateAccountInfo;
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    // resetFileHandler: () => dispatch({ type: actionTypes.RESET_FILE_HANDLER }),
+    setErrorHandler: (message) => dispatch(actionCreators.setErrorHandler(message)),
+    toggleErrorModalHandler: () => dispatch(actionCreators.toggleErrorModalHandler()),
+    createProduct: (body, headers, resetForm, resetFile) => dispatch(actionCreators.createProduct(body, headers, resetForm, resetFile))
+
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateAccountInfo);

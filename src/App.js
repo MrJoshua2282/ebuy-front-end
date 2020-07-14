@@ -1,18 +1,11 @@
-import React, { useEffect, useContext, Suspense } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import React, { useEffect, Suspense } from 'react';
+import { Switch, Route, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './App.css';
 import Spinner from './shared/Spinner/Spinner';
-import { ProductsContext } from './context';
 import Navbar from './components/Navbar/Navbar';
-// import Cart from './components/Cart/Cart';
-// import Default from './components/Default/Default';
-// import Details from './components/Details/Details';
-// import ProductList from './components/Products/ProductList';
-// import Modal from './shared/Modal/Modal';
-// import ErrorModal from './shared/Modal/ErrorModal';
-// import SignupLogin from './components/SignUpLogin/SignUpLogin';
-// import Account from './components/Account/Account';
+import * as actionCreators from './store/actionCreators';
 
 const Cart = React.lazy(() => import('./components/Cart/Cart'));
 const Default = React.lazy(() => import('./components/Default/Default'));
@@ -26,26 +19,38 @@ const Account = React.lazy(() => import('./components/Account/Account'));
 
 let logoutTimer;
 const App = () => {
-  const context = useContext(ProductsContext);
-  const { toggleSignedInHandler, token, tokenExpirationDate } = context;
+  const history = useHistory();
+  const store = useSelector(store => store);
+  const dispatch = useDispatch();
+  // const setProducts = useCallback(() => dispatch(actionCreators.setProducts), [dispatch]);
+
+  const { token, tokenExpirationDate } = store;
 
   // manage this data here bc its one of the first components to render
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('userData'));
     if (storedData && storedData.token && new Date(storedData.expiration) > new Date()) {
-      toggleSignedInHandler(storedData, new Date(storedData.expiration));
+      dispatch(actionCreators.signInHandler(storedData, new Date(storedData.expiration)));
     }
-  }, [toggleSignedInHandler]);
+  }, [dispatch]);
 
 
   useEffect(() => {
     if (token && tokenExpirationDate) {
       const remainingTime = tokenExpirationDate.getTime() - new Date().getTime();
-      logoutTimer = setTimeout(toggleSignedInHandler, remainingTime);
+      // logoutTimer = setTimeout(dispatch(actionCreators.signOutHandler()), remainingTime);
+      logoutTimer = setTimeout(() => {
+        history.replace('/');
+        dispatch(actionCreators.signOutHandler());
+      }, remainingTime);
     } else {
       clearTimeout(logoutTimer);
     }
-  }, [token, toggleSignedInHandler, tokenExpirationDate])
+  }, [token, dispatch, tokenExpirationDate])
+
+  useEffect(() => {
+    dispatch(actionCreators.setProducts())
+  }, [dispatch]);
 
   return (
     <div className='App'>
@@ -58,7 +63,7 @@ const App = () => {
           <Route path='/details' exact component={Details} />
           <Route path='/cart' exact component={Cart} />
           <Route path='/signuplogin' component={SignupLogin} />
-          {context.token && <Route path='/account' component={Account} />}
+          {token && <Route path='/account' component={Account} />}
           <Route component={Default} />
         </Switch>
       </Suspense>

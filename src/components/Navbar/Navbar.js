@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './Navbar.css';
 import CartIcon from '../../images/cart';
-import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
 class Navbar extends Component {
-  static contextType = ProductsContext;
 
   charConverter = (firstName) => {
     if (!firstName) return '';
@@ -55,11 +55,11 @@ class Navbar extends Component {
           <Link className='navbar-img-cart-link' to='/cart'><button className='navbar-img-cart-link-btn'>
             <CartIcon className='navbar-img-cart svgCart' />
                     my cart</button></Link>
-          {this.context.signedIn && <Link to='/account' className='user-first-initial'>{this.charConverter(this.context.name)}</Link>}
+          {this.props.signedIn && <Link to='/account' className='user-first-initial'>{this.charConverter(this.props.name)}</Link>}
         </section>
 
-        {this.context.signedIn ? <div onClick={() => {
-          this.context.toggleSignedInHandler();
+        {this.props.signedIn ? <div onClick={() => {
+          this.props.signOutHandler();
           this.props.history.push('/');
         }} className='link-ebuy'>
           {login}
@@ -69,4 +69,17 @@ class Navbar extends Component {
   }
 }
 
-export default withRouter(Navbar);
+const mapStateToProps = state => {
+  return {
+    name: state.name,
+    signedIn: state.signedIn
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    signOutHandler: () => dispatch(actionCreators.signOutHandler())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Navbar));

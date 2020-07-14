@@ -1,21 +1,28 @@
-import React, { useContext } from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Title from '../Title/Title';
-import { ProductsContext } from '../../context';
 
-export default function ErrorModal() {
-  const context = useContext(ProductsContext);
-  return (
-    <React.Fragment>
-      {context.showErrorModal && <div className='modal-background'
-      // onClick={
-      //   () => context.toggleErrorModalHandler()}
-      >&#32;</div>}
-      {context.showErrorModal &&
-        < div className='modal-card' >
-          <Title title={`${context.error}`} />
-        </div >}
-    </React.Fragment>
-
-  )
+class ErrorModal extends Component {
+  render() {
+    return (
+      <React.Fragment>
+        {this.props.showErrorModal && <div className='modal-background'
+        >&#32;</div>}
+        {this.props.showErrorModal &&
+          < div className='modal-card' >
+            <Title title={`${this.props.error}`} />
+          </div >}
+      </React.Fragment>
+    )
+  }
 }
+
+const mapStateToProps = state => {
+  return {
+    error: state.error,
+    showErrorModal: state.showErrorModal
+  }
+}
+
+export default connect(mapStateToProps)(ErrorModal);

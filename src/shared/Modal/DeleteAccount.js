@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './GlobalModal.css';
 import Input from '../Input/Input';
@@ -7,6 +8,7 @@ import Title from '../Title/Title';
 import Spinner from '../Spinner/Spinner';
 import { FormBtn } from '../Btn/Btns';
 import { ProductsContext } from '../../context';
+import * as actionCreators from '../../store/actionCreators';
 
 class DeleteAccount extends Component {
 
@@ -32,48 +34,28 @@ class DeleteAccount extends Component {
     this.setState({ form1: copyForm, form1IsValid: formIsValid });
   }
 
-  createProductHandler = async (event) => {
+  resetForm = (form) => {
+    let copyForm = [...form];
+    copyForm = copyForm.map(el => {
+      el = { ...el };
+      el.value = '';
+      el.valid = false;
+      el.touched = false;
+      return el;
+    });
+
+    this.setState({ form1: copyForm, form1IsValid: false });
+  }
+
+  deleteAccountHandler = (event) => {
     event.preventDefault();
 
-    try {
-      this.setState(() => {
-        return { isLoading: true }
-      })
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/delete-user/5ef49b1425cc0971d99c9e42`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.context.token,
-        },
-        // JSON.stringify() takes js objects/arrays and converts them to json
-        body: JSON.stringify({
-          email: this.state.form1[0].value,
-          password: this.state.form1[1].value,
-        })
-      })
-
-      let copyForm = [...this.state.form1];
-      copyForm.map(el => {
-        el.value = '';
-        el.valid = false;
-        el.touched = false;
-        return el;
-      });
-      this.setState({ form1: copyForm, form1IsValid: false });
-      setTimeout(() => {
-        this.props.history.replace('/');
-      }, 250);
-      this.context.toggleSignedInHandler();
-      this.context.closeModalHandler();
-
-    } catch (error) {
-      this.context.setErrorHandler(error)
-      this.context.toggleErrorModalHandler();
-
+    let body = {
+      email: this.state.form1[0].value,
+      password: this.state.form1[1].value,
     }
-    this.setState(() => {
-      return { isLoading: false }
-    })
+
+    this.props.deleteAccount(body, this.props.token, () => this.resetForm(this.state.form1), this.props.history);
   }
 
   render() {
@@ -92,7 +74,7 @@ class DeleteAccount extends Component {
     });
     return (
       <React.Fragment>
-        <form onSubmit={this.createProductHandler} >
+        <form onSubmit={this.deleteAccountHandler} >
           <Title title='Delete Account' />
           {elForm}
           {this.state.isLoading ? <Spinner /> : <FormBtn className='clearBtn' id='danger' type='submit' disabled={!this.state.form1IsValid}>Delete Account</FormBtn>}
@@ -102,4 +84,20 @@ class DeleteAccount extends Component {
   }
 }
 
-export default withRouter(DeleteAccount);
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    toggleErrorModalHandler: () => dispatch(actionCreators.toggleErrorModalHandler()),
+    setErrorHandler: (message) => dispatch(actionCreators.setErrorHandler(message)),
+    closeModalHandler: () => dispatch(actionCreators.closeModalHandler()),
+    signOutHandler: () => dispatch(actionCreators.signOutHandler()),
+    deleteAccount: (body, token, resetForm, history) => dispatch(actionCreators.deleteAccount(body, token, resetForm, history))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(DeleteAccount));
